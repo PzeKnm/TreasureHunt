@@ -13,26 +13,26 @@ using TreasureHunt.Model;
 
 namespace TreasureHunt
 {
-    public static class Loopback
+  public static class Loopback
+  {
+
+    private static ILogger _logger;
+
+
+    [FunctionName("Loopback")]
+    public static async Task<IActionResult> Run(
+        [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req,
+        ILogger log)
     {
+      _logger = log;
+      log.LogInformation("Loopback.");
+      int nSuppressMessage = await Task.Run(() => {return 99;});
 
-      private static ILogger _logger;
+      String sReply = "Loopback " + DateTime.Now.ToLongTimeString();              
 
-
-        [FunctionName("Loopback")]
-        public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req,
-            ILogger log)
-        {
-            _logger = log;
-            log.LogInformation("Loopback.");
-            int nSuppressMessage = await Task.Run(() => {return 99;});
-
-            String sReply = "Loopback " + DateTime.Now.ToLongTimeString();              
-
-            var wrappedObject = new Wrapper<string>(sReply);
-            wrappedObject.StatusCode = 200;
-            return new OkObjectResult(wrappedObject);
-        }
+      var wrappedObject = new Wrapper<string>(sReply);
+      wrappedObject.StatusCode = 200;
+      return new OkObjectResult(wrappedObject);
     }
+  }
 }
