@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="210mm"
+   height="297mm"
+   viewBox="0 0 210 297"
+   version="1.1"
+   id="svg937"
+   inkscape:version="0.92.4 (5da689c313, 2019-01-14)"
+   sodipodi:docname="Psi12cm.svg">
+  <defs
+     id="defs931" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.7"
+     inkscape:cx="61.117912"
+     inkscape:cy="843.51674"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1920"
+     inkscape:window-height="1018"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata934">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <g
+       id="g16699"
+       transform="matrix(0.08758546,0,0,-0.08758546,1.8211021,123.87232)">
+      <path
+         inkscape:connector-curvature="0"
+         id="path16701"
+         style="fill:currentColor"
+         d="m 852,656 c 90.67,0 159.3,15.33 206,46 46.7,30.67 78,68 94,112 16,44 26.3,117.33 31,220 4.7,114 30,198.7 76,254 46,55.3 122.3,83.3 229,84 v -38 c -38,-2.7 -63.7,-17.3 -77,-44 -13.3,-26.7 -20.3,-84 -21,-172 0,-128 -13.3,-226.67 -40,-296 -26.7,-69.33 -81,-126 -163,-170 -82,-44 -193.67,-67.33 -335,-70 V 265 c 0,-78 4.33,-128.33 13,-151 8.67,-22.667 27.67,-41.333 57,-56 29.33,-14.667 74.33,-21.667 135,-21 V 0 H 455 v 37 c 59.33,0.667 103.33,7 132,19 28.67,12 48,30 58,54 10,24 15,75.67 15,155 v 317 c -143.33,3.33 -254.67,26.33 -334,69 -79.33,42.67 -133,98.33 -161,167 -28,68.67 -42.33,169 -43,301 0,84 -6.33,139.7 -19,167 -12.667,27.3 -39,43.3 -79,48 v 38 c 67.333,-1.3 121.67,-12 163,-32 41.33,-20 74.33,-55.3 99,-106 24.67,-50.7 39,-117.3 43,-200 4.67,-102 14.33,-175 29,-219 14.67,-44 46.33,-81.33 95,-112 48.67,-30.67 117.67,-46.33 207,-47 v 436 c 0,78 -4.33,128.3 -13,151 -8.67,22.7 -27.67,41 -57,55 -29.33,14 -74.33,21 -135,21 v 37 h 602 v -37 c -61.33,-0.7 -106.33,-7.3 -135,-20 -28.67,-12.7 -47.33,-31 -56,-55 -8.67,-24 -13.33,-74.7 -14,-152 z" />
+    </g>
+  </g>
+</svg>
