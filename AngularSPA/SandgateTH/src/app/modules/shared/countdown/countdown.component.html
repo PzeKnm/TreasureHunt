@@ -1,0 +1,21 @@
+<!-- Add a comment here   -->
+
+<!-- preserveAspectRatio="none"  -->
+  <svg height="100%" width="100%" [attr.viewBox.]="getViewbox()" >
+
+    <!-- just mark the outside for debugging
+    <rect id="outside" x="0" y="0" 
+    [attr.width.]="controlWidth" [attr.height.]="controlHeight" />-->
+
+    <!-- Grey outline  -->  
+    <path id="outline" [attr.d.]="getOutlinePath()" 
+        [attr.stroke-width.]="strokeWidthOutline"                /> 
+ 
+    <!-- Remaining total  --> 
+    <path id="remainingTotal" [attr.d.]="getRemainingTotalPath()"
+    [attr.stroke-width.]="strokeWidthRemaining"  /> 
+
+    <!-- Remaining question  --> 
+    <path id="remainingQuestion" [attr.d.]="getRemainingQuestionPath()"
+    [attr.stroke-width.]="strokeWidthRemaining"  />  
+  </svg> 

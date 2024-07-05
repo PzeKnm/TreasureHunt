@@ -1,0 +1,63 @@
+/* You can add global styles to this file, and also import other style files */
+// @import '~@angular/material/prebuilt-themes/indigo-pink.css';
+/*
+*/
+
+// Styles for the app as a whole, nothing in here for the more or less game
+
+
+@import "../src/app/styles/general-colours.scss";
+
+
+.dev {
+  display: none;
+  // display: inline;
+}
+
+
+html {
+   /* touch-action: manipulation;*/
+   font-size: 5vh;
+}
+
+
+body {  
+    background: $body-background-color;
+ //   font-family: Victoriana, sans-serif;
+    font-family: 'Roboto';
+  //  font-family: 'Vast Shadow';
+    touch-action: manipulation; 
+    margin:0; // override user agent stylesheet
+}
+
+
+#main-container{
+  // background: $body-background-color;
+  width:100%;
+  background-image: url("/../assets/images/background.jpg"); // snow
+}
+
+
+.banner {
+  background-color: $banner-background-color;
+}
+
+.ApplicationTitle {
+  font-size: 5vh;
+  color: rgb(255, 255, 255);
+}
+
+
+.text {
+  font-size: 5vh;
+}
+
+
+.footer {
+  background-color: rgb(14, 67, 117);
+}
+
+.accessPage {
+  background-color: white;
+}
+

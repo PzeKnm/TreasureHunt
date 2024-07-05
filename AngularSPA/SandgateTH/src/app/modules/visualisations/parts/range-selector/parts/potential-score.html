@@ -1,0 +1,36 @@
+
+
+<!--
+<svg *ngIf="visible" >
+  <rect class="potentialScore" 
+      [attr.x.]="getRectXPos()" 
+      [attr.y.]="getRectYPos()"
+      [attr.width.]="width" 
+      [attr.height.]="height"   /> 
+  <text [attr.x.]="getTextXPos()"  [attr.y.]="getTextYPos()"  
+    text-anchor="middle" alignment-baseline="central" 
+    class="potentialScoreText" >{{value}}</text>
+  
+</svg>  -->
+
+
+<svg *ngIf="visible"  [attr.x.]="getRectXPos()" [attr.y.]="getRectYPos()" 
+      [attr.width.]="width" [attr.height.]="height" 
+      viewBox="0, 0, 100, 100" xmlns="http://www.w3.org/2000/svg">
+  <!-- trapezoid with rounded top-->
+  <g  class="potentialScore" 
+      [attr.stroke-width.]="strokeWidth"
+      [attr.stroke.]="getStrokeColour()"
+      [attr.fill.]="getFillColour()"    >    
+    <path d="M 49.971447,0.68567941 A 60.039032,60.039032 0 0 0 0.7434453,26.397289 L 31.894516,99.346323 H 67.991019 L 99.142089,26.397289 A 60.039032,60.039032 0 0 0 49.971447,0.68567941 Z" />
+  </g>
+ 
+
+</svg>
+
+<svg *ngIf="visible" >
+   <text [attr.x.]="getTextXPos()"  [attr.y.]="getTextYPos()"  
+    text-anchor="middle" alignment-baseline="central" 
+    class="potentialScoreText" >{{value}}</text>
+  
+</svg>
