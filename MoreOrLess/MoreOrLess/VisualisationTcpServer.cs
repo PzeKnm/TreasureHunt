@@ -98,11 +98,13 @@ namespace MoreOrLess
 
     public void SpinUpServer(string ip, int port)
     {
+/*
       IPAddress localAddr = IPAddress.Parse(ip);
       m_server = new TcpListener(localAddr, port);
       m_server.Start();
       StartListener();
       m_VizData.GameState = 0;
+*/
     }
 
 

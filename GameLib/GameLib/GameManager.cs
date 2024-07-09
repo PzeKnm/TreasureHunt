@@ -112,6 +112,11 @@ namespace GameLib
       return _theGame.GetHubDeviceID();
     }
 
+    public string GetHubUrl()
+    {
+      return _theGame.GetHubDeviceID();
+    }
+
     /// <summary>
     /// default every 30s
     /// </summary>

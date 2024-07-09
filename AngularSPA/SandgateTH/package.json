@@ -9,7 +9,7 @@
     "build": "ng build",
     "analyze-build": "ng build --prod --stats-json ",
     "analyze-inspect": "webpack-bundle-analyzer dist/SandgateTH/stats.json",
-     
+    "__install": "npm install",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"

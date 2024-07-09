@@ -207,6 +207,10 @@ namespace RaspberryGPIOManager
 
     private void WriteToPi(string path, string contents)
     {
+      Console.WriteLine(path + " - " + contents);
+      return;
+
+
 #if SIMULATION
         // unix paths don't have extensions
         if(!Directory.Exists(path + ".dat"))
@@ -216,8 +220,8 @@ namespace RaspberryGPIOManager
 
         Console.WriteLine(path + " - " + contents);                 
 #endif
-                                 
-        File.WriteAllText(path, contents);
+
+      File.WriteAllText(path, contents);
     }
   }
 }

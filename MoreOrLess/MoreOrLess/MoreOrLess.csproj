@@ -4,6 +4,8 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <Configurations>Debug;Release;Simulation</Configurations>
+    <ApplicationIcon />
+    <StartupObject></StartupObject>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)' == 'Simulation' ">

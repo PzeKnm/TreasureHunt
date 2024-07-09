@@ -15,6 +15,7 @@ namespace GameLib
     private int _score;
 
     private string _hubDeviceID;
+    private string _hubDeviceUrl;
     private string _hubDeviceKey;
 
     // how long the game runs for
@@ -50,6 +51,7 @@ namespace GameLib
     {
       _mgr = mgr;
       _hubDeviceID = "Not Set";
+      _hubDeviceUrl = "Not Set";
       _hubDeviceKey = "Not Set";
       _GameLengthSec = 60;
 
@@ -59,12 +61,14 @@ namespace GameLib
     }
 
     public string GetHubDeviceID() { return _hubDeviceID;}
+    public string GetHubDeviceUrl() { return _hubDeviceUrl; }
     public string GetHubDeviceKey() { return _hubDeviceKey;}
     public int GetHeartbeatMs() { return _HeartbeatSec * 1000;}
 
-    protected void SetHubDeviceDetails(string hubDeviceID, string hubDeviceKey)
+    protected void SetHubDeviceDetails(string hubDeviceID, string hubDeviceUrl, string hubDeviceKey)
     {
       _hubDeviceID = hubDeviceID;
+      _hubDeviceUrl = hubDeviceUrl;
       _hubDeviceKey = hubDeviceKey;
     }
 

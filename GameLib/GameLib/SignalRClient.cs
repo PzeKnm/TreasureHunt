@@ -15,19 +15,22 @@ namespace GameLib
 
     string _hubDeviceID;
 
+    string _sUrl;
+
     //public event EventHandler CommandReceived;
     public event EventHandler<ClientCommandEventArgs> CommandReceived;
 
-    public SignalRClient(string sHubDeviceID)
+    public SignalRClient(string sHubDeviceID, string sUrl)
     {
       _hubDeviceID = sHubDeviceID;
+      _sUrl = sUrl;
     }
                               
     public async void StartListening()
     {
 
       _connection = new HubConnectionBuilder()
-        .WithUrl("https://sandgatethapi.azurewebsites.net/api/")
+        .WithUrl(_sUrl /*"https://sandgatethapi.azurewebsites.net/api/"*/)
         .Build();
 
       _connection.Closed += async (error) =>

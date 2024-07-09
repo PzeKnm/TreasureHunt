@@ -72,6 +72,7 @@ namespace MoreOrLess
       data.RemainingSecs = (ushort)vd.RemainingSecs;
       data.RemainingQuestionSecs = (byte)vd.RemainingQuestionSecs;
 
+/*
       // Broadcast to all the devices on the bus and send them all the good news.
       var i2cDevice = I2cDevice.Create(new I2cConnectionSettings(busId: 1, deviceAddress: m_cBroadcastAddr));
       var sm = new I2CSlaveDevice(i2cDevice);
@@ -83,7 +84,7 @@ namespace MoreOrLess
       {
       }
 
-      sm.Dispose();
+      sm.Dispose();*/
     }
 
 
@@ -103,6 +104,7 @@ namespace MoreOrLess
       Console.WriteLine("--------------");
       Console.WriteLine("Status Address Device");
       Console.WriteLine("------ ------- ------");
+/*
       foreach (I2CSlaveData slave in m_PotentialSlaves)
       {
         var i2cDevice = I2cDevice.Create(new I2cConnectionSettings(busId: 1, deviceAddress: slave.m_Address));
@@ -120,7 +122,7 @@ namespace MoreOrLess
 
         sm.Dispose();
       }		
-      
+      */
       Console.WriteLine("======================================================================");
     }
   }

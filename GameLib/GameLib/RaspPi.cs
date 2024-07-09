@@ -42,6 +42,7 @@ namespace GameLib
 
     public void InitialiseFromPinArray(List<RaspPin> lstPins)
     {
+/*
       foreach(RaspPin pn in lstPins)
       {
         RaspPin pin = new RaspPin();
@@ -50,7 +51,7 @@ namespace GameLib
         pin.name = pn.name;
         m_lstPins.Add(pin);
       }
-
+*/
     }
 /*
     public void Initialise()

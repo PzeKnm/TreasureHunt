@@ -74,7 +74,7 @@ namespace GameLib
       {
         Console.WriteLine("SignalR starts.");
         SignalRClient _signalClient;
-        _signalClient = new SignalRClient(_gm.GetHubDeviceID());
+        _signalClient = new SignalRClient(_gm.GetHubDeviceID(), _gm.GetHubUrl());
         _signalClient.CommandReceived += _signalClient_CommandReceived; ;
         _signalClient.StartListening();
 

@@ -61,7 +61,7 @@ namespace MoreOrLess
       Console.WriteLine("Program 'MoreOrLess' begins. Version: " + _cVersion);
       _visGenerator = new VisualisationGenerator();
 
-      SetHubDeviceDetails("Station002", "rgvlStnhl3c7vPMeFI9OEK5TnQGL/0WNPBgZji/Hiro=");
+      SetHubDeviceDetails("Station002", "rgvlStnhl3c7vPMeFI9OEK5TnQGL/0WNPBgZji/Hiro=", "https://sandgatethapi.azurewebsites.net/api/");
       SetGameLength(_cGameLengthSecs);
       SetAuthenticationTimeoutSec(_cAuthenticationtimeoutSecs);
       _HeartbeatSec = 20;
@@ -481,8 +481,8 @@ namespace MoreOrLess
       if(_pi == null)
         return 0;
            
-      bool bDay = (_pi.ReadPin("LightSensor") == 1);
-      bool bMovement = (_pi.ReadPin("MotionSensor") == 1);
+      bool bDay = false; ////  (_pi.ReadPin("LightSensor") == 1);
+      bool bMovement = false; ////   = (_pi.ReadPin("MotionSensor") == 1);
       // todo should this be on a switch somewhere?
       bool bPeripheralShutdown = GetPeripheralShutdown();
       bool bDormant = (GetGameMangerState() == GameManagerState.Online_Dormant);

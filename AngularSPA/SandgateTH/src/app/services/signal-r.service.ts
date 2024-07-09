@@ -29,8 +29,8 @@ export class ClientMessage {
 export class SignalRService {
 
     private readonly _http: HttpClient;
-   //  private readonly _baseUrl: string = "http://localhost:7071/api/";
-   private readonly _baseUrl: string = "https://sandgatethapi.azurewebsites.net/api/";
+     private readonly _baseUrl: string = "http://localhost:7071/api/";
+   //private readonly _baseUrl: string = "https://sandgatethapi.azurewebsites.net/api/";
 
     private hubConnection: HubConnection;
 
