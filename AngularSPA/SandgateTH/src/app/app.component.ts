@@ -15,7 +15,9 @@ export class AppComponent {
 
   constructor( private srvCookie: CookieService,
     private srvGuid: GuidService,
-    private srvDataCache: DataCacheService ) { }
+    private srvDataCache: DataCacheService ) { 
+      console.log('AppComponent');
+    }
  
   ngOnInit(): void {
 
@@ -25,5 +27,8 @@ export class AppComponent {
     }
 
     this.srvDataCache.userId = this.srvCookie.get('UserId');
+
+
+    this.srvDataCache.EnsureInitialize().then();
   }
 }

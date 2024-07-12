@@ -11,7 +11,7 @@ import { Router } from '@angular/router';
 })
 export class GameRestApiService {
 
-  endpoint = 'https://sandgatethapi.azurewebsites.net/api/';
+  endpoint = 'https://treasurehuntrestapi.azurewebsites.net/api/';
   ////endpoint = 'http://localhost:7071/api/';
 
   httpOptions = {

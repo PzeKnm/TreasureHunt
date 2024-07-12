@@ -29,8 +29,8 @@ export class ClientMessage {
 export class SignalRService {
 
     private readonly _http: HttpClient;
-     private readonly _baseUrl: string = "http://localhost:7071/api/";
-   //private readonly _baseUrl: string = "https://sandgatethapi.azurewebsites.net/api/";
+    // private readonly _baseUrl: string = "http://localhost:7071/api/";
+   private readonly _baseUrl: string = "https://treasurehuntrestapi.azurewebsites.net/api/";
 
     private hubConnection: HubConnection;
 
@@ -44,7 +44,7 @@ export class SignalRService {
     private getConnectionInfo(): Observable<SignalRConnectionInfo> {
         let requestUrl = `${this._baseUrl}negotiate`;
         return this._http.get<SignalRConnectionInfo>(requestUrl, 
-          { withCredentials: true });
+          { withCredentials: false });
     }
 
     /**  */
@@ -57,7 +57,7 @@ export class SignalRService {
   
           let options = {
             accessTokenFactory: () => info.accessToken,
-            withCredentials : true
+            withCredentials : false
           };
   
           this.hubConnection = new signalR.HubConnectionBuilder()
