@@ -13,6 +13,13 @@ namespace MoreOrLess
   {
 
     string _cVersion = "2.0";
+    string _cBackendUrl = "https://treasurehuntrestapi.azurewebsites.net/api/";
+    /*"http://localhost:7071/api"*/
+
+    bool _cSim = true;
+
+
+
 
     // Constants
     int _cGameLengthSecs = 60;
@@ -59,9 +66,12 @@ namespace MoreOrLess
     public MoreOrLess(GameManager mgr) : base(mgr)
     {
       Console.WriteLine("Program 'MoreOrLess' begins. Version: " + _cVersion);
-      _visGenerator = new VisualisationGenerator();
+      _visGenerator = new VisualisationGenerator(_cSim);
 
-      SetHubDeviceDetails("Station002", "rgvlStnhl3c7vPMeFI9OEK5TnQGL/0WNPBgZji/Hiro=", "https://sandgatethapi.azurewebsites.net/api/");
+      SetRestApiBaseUrl(_cBackendUrl);
+
+      SetHubDeviceDetails("Station002", _cBackendUrl, 
+            "IqdycSgOYldhVxe1uW98avBPhWbh0Z4YV58OC2Fl7Q0=" /*"rgvlStnhl3c7vPMeFI9OEK5TnQGL/0WNPBgZji/Hiro="*/ );
       SetGameLength(_cGameLengthSecs);
       SetAuthenticationTimeoutSec(_cAuthenticationtimeoutSecs);
       _HeartbeatSec = 20;
@@ -149,13 +159,8 @@ namespace MoreOrLess
     {
       if(_questionSource == null)
         _questionSource = new QuestionSource(GetRestApi());
-      
-      bool bSim = false;
-      #if( SIMULATION )
-            bSim = true;
-      #endif 
-      
-      _pi = new RaspPi(bSim);
+            
+      _pi = new RaspPi(_cSim);
 
       List<RaspPin> lstPins = new List<RaspPin>();
       lstPins.Add(new RaspPin { name = "MotionSensor", pinNumber = GPIOPinDriver.Pin.GPIO22, direction = GPIOPinDriver.GPIODirection.In});

@@ -57,7 +57,7 @@ namespace MoreOrLess
             // TODO add other origins here
             builder.WithOrigins(
               "http://localhost:4200",
-              "https://sandgatetreasurehunt.azurewebsites.net")
+              "https://sandgatetreasurehunt.azurewebsites.net")  /*mkmk put config value here*/
             .AllowAnyHeader().AllowAnyMethod().AllowCredentials();
           });
 

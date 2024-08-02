@@ -14,41 +14,51 @@ using TreasureHuntRestApi.Model;
 
 namespace TreasureHunt
 {
-    public static class Stations
+  public static class Stations
+  {
+
+    private static ILogger _logger;
+
+
+    [FunctionName("Stations")]
+    public static async Task<IActionResult> Run(
+        [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req,
+        ILogger log)
     {
-
-      private static ILogger _logger;
-
-
-        [FunctionName("Stations")]
-        public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req,
-            ILogger log)
+      DateTime dteBegin = DateTime.Now;
+      _logger = log;
+      try
+      {
+        DataAccess da = new DataAccess(_logger);
+        if(da.CheckDBActive())
         {
           UserIdFuncs.UpdateUserId(req, log);
-
-          _logger = log;
           log.LogInformation("Get Stations.");
           int nSuppressMessage = await Task.Run(() => {return 99;});
 
-          DataAccess da = new DataAccess(_logger);
 
           da.UpdateStationStatusFromLastContactTime();
-
-          List<GameStationDto> lst = da.GetGameStations();   
+          List<GameStationDto> lst = da.GetGameStations();  
 
           var wrappedObject = new Wrapper<IEnumerable<GameStationDto>>(lst);
           wrappedObject.StatusCode = 200;
+          wrappedObject.SetExecutionDurationSince(dteBegin);
           return new OkObjectResult(wrappedObject);
-
-            /* 
-            var jsonToReturn = JsonConvert.SerializeObject(lst);
-
-            if(jsonToReturn != null)
-              return new OkObjectResult(jsonToReturn);
-
-            return new BadRequestObjectResult("Invalid Input parameter");
-*/
         }
+        var wrappedObjectError = new Wrapper<string>("CheckDBActive fails");
+        wrappedObjectError.StatusCode = 400;
+        wrappedObjectError.ErrorMessage = "CheckDBActive fails";
+        wrappedObjectError.SetExecutionDurationSince(dteBegin);
+        return new BadRequestObjectResult(wrappedObjectError);
+      }
+      catch (Exception ex)
+      {
+        var wrappedObject = new Wrapper<string>(ex.Message);
+        wrappedObject.StatusCode = 400;
+        wrappedObject.ErrorMessage = ex.Message;
+        wrappedObject.SetExecutionDurationSince(dteBegin);
+        return new BadRequestObjectResult(wrappedObject);
+      }
     }
+  }
 }

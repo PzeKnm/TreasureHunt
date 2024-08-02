@@ -14,6 +14,7 @@ namespace GameLib
     private GameManager _mgr;
     private int _score;
 
+    private string _restApiBaseUrl;
     private string _hubDeviceID;
     private string _hubDeviceUrl;
     private string _hubDeviceKey;
@@ -50,6 +51,7 @@ namespace GameLib
     public Game(GameManager mgr)
     {
       _mgr = mgr;
+      _restApiBaseUrl = "Not Set";
       _hubDeviceID = "Not Set";
       _hubDeviceUrl = "Not Set";
       _hubDeviceKey = "Not Set";
@@ -60,10 +62,17 @@ namespace GameLib
       _dogEndOfGameTimeout.Start();
     }
 
+    public string GetRestApiBaseUrl() { return _restApiBaseUrl; }
     public string GetHubDeviceID() { return _hubDeviceID;}
     public string GetHubDeviceUrl() { return _hubDeviceUrl; }
     public string GetHubDeviceKey() { return _hubDeviceKey;}
     public int GetHeartbeatMs() { return _HeartbeatSec * 1000;}
+
+
+    protected void SetRestApiBaseUrl(string sUrl)
+    {
+      _restApiBaseUrl = sUrl;
+    }
 
     protected void SetHubDeviceDetails(string hubDeviceID, string hubDeviceUrl, string hubDeviceKey)
     {

@@ -10,21 +10,20 @@ namespace MoreOrLess
   public class I2CSlaveData
   {
 
+    // Since I2C is byte-based, we need to decide data types carefully.
+    // Total datagram length must be <= 32 bytes
+    public struct SI2CVizData {
+      public byte EnvironmentStatus;      //    1 byte
+      public byte GameState;              //    1 byte
+      public byte InternalState;          //    1 byte
+      public ushort PotentialScore;       //    2 bytes
+      public ushort Score;                //    2 bytes
+      public ushort TotalGameSecs;        //    2 bytes
+      public ushort RemainingSecs;        //    2 bytes
+      public byte RemainingQuestionSecs;  //    1 byte
+    };                                    // = 12 bytes
 
-  // Since I2C is byte-based, we need to decide data types carefully.
-  // Total datagram length must be <= 32 bytes
-  public struct SI2CVizData {
-    public byte EnvironmentStatus;      //    1 byte
-    public byte GameState;              //    1 byte
-    public byte InternalState;          //    1 byte
-    public ushort PotentialScore;       //    2 bytes
-    public ushort Score;                //    2 bytes
-    public ushort TotalGameSecs;        //    2 bytes
-    public ushort RemainingSecs;        //    2 bytes
-    public byte RemainingQuestionSecs;  //    1 byte
-  };                                    // = 12 bytes
-
-  public static int SIZE_OF_VIZ_DATA_IN_BYTES =     12;
+    public static int SIZE_OF_VIZ_DATA_IN_BYTES =     12;
 
     public I2CSlaveData(byte addr, string name)
     {
@@ -42,11 +41,13 @@ namespace MoreOrLess
   {
     private int m_cBroadcastAddr = 0x0;
 
+    bool m_bSim = false;
 
     private List<I2CSlaveData> m_PotentialSlaves;
 
-    public VisualisationI2CServer()
+    public VisualisationI2CServer(bool bSim)
     {
+      m_bSim = bSim;
       m_PotentialSlaves = new List<I2CSlaveData>();
 
       // Even though we're going to broadcast the data to anyone who's listening, it would still
@@ -72,19 +73,22 @@ namespace MoreOrLess
       data.RemainingSecs = (ushort)vd.RemainingSecs;
       data.RemainingQuestionSecs = (byte)vd.RemainingQuestionSecs;
 
-/*
-      // Broadcast to all the devices on the bus and send them all the good news.
-      var i2cDevice = I2cDevice.Create(new I2cConnectionSettings(busId: 1, deviceAddress: m_cBroadcastAddr));
-      var sm = new I2CSlaveDevice(i2cDevice);
-      try
+      if (!m_bSim)
       {
-        sm.SendVisualisationData(data);
-      }
-      catch
-      {
+        // Broadcast to all the devices on the bus and send them all the good news.
+        var i2cDevice = I2cDevice.Create(new I2cConnectionSettings(busId: 1, deviceAddress: m_cBroadcastAddr));
+        var sm = new I2CSlaveDevice(i2cDevice);
+        try
+        {
+          sm.SendVisualisationData(data);
+        }
+        catch
+        {
+        }
+
+        sm.Dispose();
       }
 
-      sm.Dispose();*/
     }
 
 
@@ -104,25 +108,32 @@ namespace MoreOrLess
       Console.WriteLine("--------------");
       Console.WriteLine("Status Address Device");
       Console.WriteLine("------ ------- ------");
-/*
+
       foreach (I2CSlaveData slave in m_PotentialSlaves)
       {
-        var i2cDevice = I2cDevice.Create(new I2cConnectionSettings(busId: 1, deviceAddress: slave.m_Address));
-        var sm = new I2CSlaveDevice(i2cDevice);
-        try
+        if(m_bSim)
         {
-          sm.SendVisualisationData(data);
-          slave.m_bOnline = true;
-          Console.WriteLine("OK       " + slave.m_Address.ToString() + "     " + slave.m_Name );
+          Console.WriteLine("OK (sim)  " + slave.m_Address.ToString() + "     " + slave.m_Name);
         }
-        catch
+        else
         {
-          Console.WriteLine("NOT OK!  " + slave.m_Address.ToString() + "     " + slave.m_Name);
-        }
+          var i2cDevice = I2cDevice.Create(new I2cConnectionSettings(busId: 1, deviceAddress: slave.m_Address));
+          var sm = new I2CSlaveDevice(i2cDevice);
+          try
+          {
+            sm.SendVisualisationData(data);
+            slave.m_bOnline = true;
+            Console.WriteLine("OK       " + slave.m_Address.ToString() + "     " + slave.m_Name );
+          }
+          catch
+          {
+            Console.WriteLine("NOT OK!  " + slave.m_Address.ToString() + "     " + slave.m_Name);
+          }
 
-        sm.Dispose();
+          sm.Dispose();
+        }
       }		
-      */
+      
       Console.WriteLine("======================================================================");
     }
   }
@@ -159,9 +170,11 @@ namespace MoreOrLess
     }
   */
 
+  /*================================================================================*/
+
   class I2CSlaveDevice: IDisposable
   {
-      public const byte I2cAddressBase = 0x2b;
+    public const byte I2cAddressBase = 0x2b;
 
     private I2cDevice _device;
 
@@ -197,10 +210,6 @@ namespace MoreOrLess
       ReadOnlySpan<byte> bytes = arr; // Implicit cast from T[] to Span<T>
       _device.Write(bytes);
     }
-
-   
-
-
 
     public void Dispose()
     {

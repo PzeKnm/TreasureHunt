@@ -30,7 +30,7 @@ namespace GameLib
     {
 
       _connection = new HubConnectionBuilder()
-        .WithUrl(_sUrl /*"https://sandgatethapi.azurewebsites.net/api/"*/)
+        .WithUrl(_sUrl )
         .Build();
 
       _connection.Closed += async (error) =>

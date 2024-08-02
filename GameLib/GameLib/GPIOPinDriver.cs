@@ -12,6 +12,7 @@ namespace RaspberryGPIOManager
     private string GPIO_ROOT_DIR = "/sys/class/gpio/";
     private static List<Pin> _exported_pins = new List<Pin>();
     private bool _disposed;
+    private bool _simMode;
 
     /// <summary>
     /// P1 GPIO pins
@@ -121,8 +122,11 @@ namespace RaspberryGPIOManager
             throw new ObjectDisposedException("Selected pin has been disposed.");
         else
         {
-            string state = File.ReadAllText(String.Format("{0}gpio{1}/value", GPIO_ROOT_DIR, GPIOPin.ToString().Substring(4)));
-            return (state[0] == '1' ? GPIOState.High : GPIOState.Low);
+          string sPath = String.Format("{0}gpio{1}/value", GPIO_ROOT_DIR, GPIOPin.ToString().Substring(4));
+          if(!File.Exists(sPath))
+            return GPIOState.Low;
+          string state = File.ReadAllText(sPath);
+          return (state[0] == '1' ? GPIOState.High : GPIOState.Low);
         }
       }
       set
@@ -170,9 +174,10 @@ namespace RaspberryGPIOManager
         }
     }
 
-    private void SetupPath(bool _bSimMode)
-    {            
-      if(_bSimMode)
+    private void SetupPath(bool bSimMode)
+    {
+      _simMode = bSimMode;
+      if (_simMode)
         GPIO_ROOT_DIR = "c:\\temp\\PiSim\\";                    
       else
         GPIO_ROOT_DIR = "/sys/class/gpio/";    
@@ -207,19 +212,14 @@ namespace RaspberryGPIOManager
 
     private void WriteToPi(string path, string contents)
     {
-      Console.WriteLine(path + " - " + contents);
-      return;
-
-
-#if SIMULATION
+      if (_simMode)
+      {
         // unix paths don't have extensions
-        if(!Directory.Exists(path + ".dat"))
+        if (!Directory.Exists(path + ".dat"))
         {
             System.IO.Directory.CreateDirectory(path + ".dat");
         }
-
-        Console.WriteLine(path + " - " + contents);                 
-#endif
+      }            
 
       File.WriteAllText(path, contents);
     }

@@ -33,13 +33,15 @@ namespace MoreOrLess
 
     bool m_bUseFileSystem = false;
 
-    public VisualisationGenerator()
+    bool m_bSim = false;
+
+    public VisualisationGenerator(bool bSim)
     {
-      #if SIMULATION
+      m_bSim = bSim;
+      if(m_bSim)
         _path = @"D:\Temp\ram\tmp\"; 
-      #else
+      else
         _path = @"/ram/tmp/";
-      #endif
 
       if(m_bUseFileSystem)
       {
@@ -52,7 +54,7 @@ namespace MoreOrLess
       cancelSourceVisualisationSignalRServer = new CancellationTokenSource();
       srvSignalRViz.RunServer(cancelSourceVisualisationSignalRServer.Token);
 
-      srvI2CServer = new VisualisationI2CServer();
+      srvI2CServer = new VisualisationI2CServer(m_bSim);
 
       srvTcp = new VisualisationTcpServer();
       Thread t = new Thread(delegate ()

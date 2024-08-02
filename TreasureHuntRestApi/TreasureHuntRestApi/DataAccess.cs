@@ -15,6 +15,8 @@ namespace TreasureHunt.Data
 
     // private static SqlConnection connection = new SqlConnection();
     private static string sConn = "Server=tcp:firebase-subscriptions.database.windows.net,1433;Initial Catalog=SandgateTH;Persist Security Info=False;User ID=FunctionsUser;Password=AddSubs2DB;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
+    private static string sConnLongTimeout = "Server=tcp:firebase-subscriptions.database.windows.net,1433;Initial Catalog=SandgateTH;Persist Security Info=False;User ID=FunctionsUser;Password=AddSubs2DB;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=120;";
+
     //  private static string sConn = "Server=ASWKNM01\\SQL2008;Initial Catalog=TreasureHunt;Persist Security Info=False;User ID=TreasureHuntUser;Password=Treasure2Find;MultipleActiveResultSets=False;Connection Timeout=30;";
 
     private static int cInactivityTimoutMin = 10;
@@ -23,6 +25,25 @@ namespace TreasureHunt.Data
     public DataAccess(ILogger log)
     {
       _logger = log;
+    }
+
+    // since the DB is on a sleepable resource, wake it up if need be
+    public bool CheckDBActive()
+    {
+      try
+      {
+        using (SqlConnection conn = new SqlConnection(sConnLongTimeout))
+        {
+          conn.Open();
+          conn.Close();
+        }
+        return true;
+      }
+      catch (SqlException ex)
+      {
+        _logger.LogInformation(ex.Message);
+        throw (ex);
+      }
     }
 
     public List<GameStationDto> GetGameStations()
@@ -59,6 +80,7 @@ namespace TreasureHunt.Data
       catch (SqlException ex)
       {
         _logger.LogInformation(ex.Message);
+        throw(ex);
       }
 
       return lst;
@@ -607,9 +629,109 @@ namespace TreasureHunt.Data
         _logger.LogInformation(ex.Message);
       }
       return;
-    }  
-  }
+    }
 
+    public List<PinStateDto> GetPinState(string ControllerId, string pinName = "")
+    {
+      List<PinStateDto> lst = new List<PinStateDto>();
+      try
+      {
+        using (SqlConnection conn = new SqlConnection(sConn))
+        {
+          conn.Open();
+          string sQry = string.Format("SELECT * FROM TPinState where ControllerID = '{0}' ", ControllerId);
+          using (SqlCommand cmd = new SqlCommand(sQry, conn))
+          {
+            SqlDataReader reader = cmd.ExecuteReader();
 
+            if (reader.HasRows)
+            {
+              while (reader.Read())
+              {
+                PinStateDto gs = new PinStateDto();          
+                gs.Id = reader["ID"].ToString();
+                gs.ControllerId = reader["ControllerID"].ToString();
+                gs.PinName = reader["PinName"].ToString();
+                gs.Direction = reader["Direction"].ToString();
+                gs.State = reader.GetInt("State");
+                if(pinName == "" || pinName == gs.PinName)
+                  lst.Add(gs);
+              }
+            }
 
-}
+            reader.Close();
+          }
+        }
+      }
+      catch (SqlException ex)
+      {
+        _logger.LogInformation(ex.Message);
+        throw (ex);
+      }
+
+      return lst;
+    }
+
+    // return true if the state has changed
+    public bool SetPinState(PinStateDto pinState)
+    {
+      try
+      {
+        bool bHasChanged = false;
+        List<PinStateDto> lstCurrent = GetPinState(pinState.ControllerId, pinState.PinName);
+        if(lstCurrent.Count == 1)
+        {
+          PinStateDto pinCurrent = lstCurrent[0];
+          if(pinCurrent.State != pinState.State)
+            bHasChanged = true;
+        }
+
+        using (SqlConnection conn = new SqlConnection(sConn))
+        {
+          conn.Open();
+          string sQry = "";
+
+          if(lstCurrent.Count == 1)
+          {
+            sQry += "UPDATE TPinState SET State=@State WHERE ControllerID=@ControllerID AND PinName= @PinName";
+          }
+          else
+          {
+            sQry += "INSERT INTO TPinState (ID, ControllerID, PinName, Direction, State) VALUES(@Id, @ControllerID, @PinName, @Direction, @State)  ";
+          }
+
+          using (SqlCommand cmd = new SqlCommand(sQry, conn))
+          {
+            if (lstCurrent.Count == 1)
+            {
+              cmd.Parameters.AddWithValue("@ControllerID", pinState.ControllerId);
+              cmd.Parameters.AddWithValue("@PinName", pinState.PinName);
+              cmd.Parameters.AddWithValue("@State", pinState.State);
+            }
+
+            if (lstCurrent.Count == 0)
+            {
+              // new record, requires new guid
+              cmd.Parameters.AddWithValue("@Id", Guid.NewGuid());
+              cmd.Parameters.AddWithValue("@ControllerID", pinState.ControllerId);
+              cmd.Parameters.AddWithValue("@PinName", pinState.PinName);
+              cmd.Parameters.AddWithValue("@Direction", pinState.Direction);
+              cmd.Parameters.AddWithValue("@State", pinState.State);
+              bHasChanged = true;
+            }
+
+            int rows = cmd.ExecuteNonQuery();
+            return bHasChanged;
+          }
+        }
+      }
+      catch (SqlException ex)
+      {
+        _logger.LogInformation(ex.Message);
+      }
+      return false;
+    }
+
+  } // DataAccess
+
+} // ns

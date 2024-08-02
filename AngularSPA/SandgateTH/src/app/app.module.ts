@@ -27,6 +27,7 @@ import { AccessCodeLoginView } from './views/access-code-login/access-code-login
 import { GameUIView } from './views/game-ui/game-ui.component';
 import { GlobalErrorHandler } from './services/global-error-handler';
 import { SharedModule } from './modules/shared/shared.module';
+import { VisualisationsModule } from './modules/visualisations/visualisations.module';
 
 
 @NgModule({
@@ -56,6 +57,7 @@ import { SharedModule } from './modules/shared/shared.module';
     AppRoutingModule,
     FormsModule,
     SharedModule,
+    VisualisationsModule,
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AddHeaderInteceptorService, multi: true },

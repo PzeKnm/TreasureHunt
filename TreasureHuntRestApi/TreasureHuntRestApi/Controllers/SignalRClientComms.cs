@@ -64,13 +64,18 @@ namespace TreasureHunt
 
       public static class TestMessageFunction
       {
-          [FunctionName("messagetest")]
-          public static async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get")]HttpRequest req, 
-                                                      [SignalR(HubName = "BroadcastClientMessage")]IAsyncCollector<SignalRMessage> signalRMessages, 
-                                                      [SignalRConnectionInfo(HubName = "BroadcastClientMessage")]SignalRConnectionInfo info,
-                                                      ILogger log)
+        [FunctionName("messagetest")]
+        public static async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get")]HttpRequest req, 
+                                                    [SignalR(HubName = "BroadcastClientMessage")]IAsyncCollector<SignalRMessage> signalRMessages, 
+                                                    [SignalRConnectionInfo(HubName = "BroadcastClientMessage")]SignalRConnectionInfo info,
+                                                    ILogger log)
+        {
+
+          DateTime dteBegin = DateTime.Now;
+          _logger = log;
+          try
           {
-            int nSuppressMessage = await Task.Run(() => {return 99;});
+            int nSuppressMessage = await Task.Run(() => { return 99; });
             ClientMessage cm = new ClientMessage();
             cm.Sender = "MessageTest";
             cm.StationId = "MyStation";
@@ -79,17 +84,32 @@ namespace TreasureHunt
             cm.Command = "MyCommand";
             cm.Parameters = "MyParameters";
 
-            await SignalRClientComms.PublishMessageToSignalRClients(signalRMessages, cm.Sender, cm.StationId, cm.Direction, 
+            bool bResult = await SignalRClientComms.PublishMessageToSignalRClients(signalRMessages, cm.Sender, cm.StationId, cm.Direction,
                 cm.AccessToken, cm.Command, cm.Parameters);
- /*
-            await signalRMessages.AddAsync(new SignalRMessage()
-            {
-                Target = "ClientMessage",
-                Arguments = new object[] { cm }
-            });
-*/
-            return new OkObjectResult("messagetest called ok");
+            /*
+                      await signalRMessages.AddAsync(new SignalRMessage()
+                      {
+                          Target = "ClientMessage",
+                          Arguments = new object[] { cm }
+                      });
+            */
+            string sResult = bResult? "messagetest called ok" : "messagetest failed";
+            var wrappedObject = new Wrapper<string>(sResult);
+            wrappedObject.StatusCode = 200;
+            wrappedObject.SetExecutionDurationSince(dteBegin);
+            return new OkObjectResult(wrappedObject);
           }
+          catch (Exception ex)
+          {
+            var wrappedObject = new Wrapper<string>(ex.Message);
+            wrappedObject.StatusCode = 400;
+            wrappedObject.ErrorMessage = ex.Message;
+            wrappedObject.SetExecutionDurationSince(dteBegin);
+            return new BadRequestObjectResult(wrappedObject);
+          }
+
+
+        }
       }
 
 

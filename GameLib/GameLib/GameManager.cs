@@ -84,7 +84,7 @@ namespace GameLib
       _dogPostGameTimeout.WatchdogBites += _dog_WatchdogPostGameBites;
                  
 
-      _restApi = new RestApi(_theGame.GetHubDeviceID(), _theGame.GetHubDeviceKey());
+      _restApi = new RestApi(_theGame.GetRestApiBaseUrl(), _theGame.GetHubDeviceID(), _theGame.GetHubDeviceKey());
       _theGame.Initialise();
       _theGame.ErrorOccurred += _Game_ErrorOccurred;
       _theGame.ScoreChanged += _Game_ScoreChanged;
@@ -114,7 +114,7 @@ namespace GameLib
 
     public string GetHubUrl()
     {
-      return _theGame.GetHubDeviceID();
+      return _theGame.GetHubDeviceUrl();
     }
 
     /// <summary>

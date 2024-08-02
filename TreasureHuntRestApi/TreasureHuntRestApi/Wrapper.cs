@@ -69,6 +69,9 @@ namespace TreasureHunt.Data
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)] 
     public DateTime ExecutionDate { get; set; }
 
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    public int ExecutionDurationMs { get; set; }
+
     public void AddLink(string name, string url)
     {
       if(Links == null)
@@ -79,6 +82,11 @@ namespace TreasureHunt.Data
       l.Name = name;
       l.URL = url;
       Links.Add(l);
+    }
+
+    public void SetExecutionDurationSince(DateTime dte)
+    {
+      ExecutionDurationMs = (int)(DateTime.Now - dte).TotalMilliseconds;
     }
   }
 

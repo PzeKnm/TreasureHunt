@@ -24,6 +24,7 @@ namespace TreasureHunt
         [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req,
         ILogger log)
     {
+      DateTime dteBegin = DateTime.Now;
       _logger = log;
       log.LogInformation("Loopback.");
       int nSuppressMessage = await Task.Run(() => {return 99;});
@@ -32,6 +33,7 @@ namespace TreasureHunt
 
       var wrappedObject = new Wrapper<string>(sReply);
       wrappedObject.StatusCode = 200;
+      wrappedObject.SetExecutionDurationSince(dteBegin);
       return new OkObjectResult(wrappedObject);
     }
   }
