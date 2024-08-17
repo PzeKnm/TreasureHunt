@@ -55,15 +55,21 @@ namespace MoreOrLess
 
   }
 
-
+  [DataContract]
   public class Question
   {
-    public int QuestionKey;
-    public string Category;
-    public string QuestionText;
-    public int Answer;
-    public int RangeLo;
-    public int RangeHi;
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    public int QuestionKey { get; set; }
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    public string Category { get; set; }
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    public string QuestionText { get; set; }
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    public int Answer { get; set; }
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    public int RangeLo { get; set; }
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    public int RangeHi { get; set; }
   }
 
 

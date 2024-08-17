@@ -14,13 +14,11 @@ using TreasureHuntRestApi.Model;
 
 namespace TreasureHunt
 {
-  public static class GenerateNewAccessCode
+  public class GenerateNewAccessCode : ControllerBase
   {
 
-      private static ILogger _logger;
-
       [FunctionName("GenerateNewAccessCode")]
-      public static async Task<IActionResult> Run(
+      public async Task<IActionResult> Run(
           [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req,
           [SignalR(HubName = "BroadcastClientMessage")]IAsyncCollector<SignalRMessage> signalRMessages,
           ILogger log)
@@ -40,6 +38,7 @@ namespace TreasureHunt
             var wrappedError = new Wrapper<AccessResult>(arError);
             wrappedError.ErrorMessage = "Invalid parameters";
             wrappedError.StatusCode = 400;
+            _logger.LogWarning("GenerateNewAccessCode - Invalid parameters, GameId == null");
             return new BadRequestObjectResult(wrappedError);
           }
 
@@ -54,6 +53,7 @@ namespace TreasureHunt
             var wrappedError = new Wrapper<AccessResult>(arError);
             wrappedError.ErrorMessage = "No hub device for station";
             wrappedError.StatusCode = 400;
+            _logger.LogWarning("GenerateNewAccessCode - No hub device for station");
             return new BadRequestObjectResult(wrappedError);              
           }
 
@@ -71,11 +71,12 @@ namespace TreasureHunt
               wrappedError.ErrorMessage = "Authenticating. Station busy with other client";
 
             wrappedError.StatusCode = StatusCodes.Status409Conflict;
+            _logger.LogWarning("GenerateNewAccessCode - " + wrappedError.ErrorMessage);
             return new BadRequestObjectResult(wrappedError);               
           }
 
           await SignalRClientComms.PublishMessageToSignalRClients(signalRMessages, GameId, hubDeviceId, 
-                "SPA2Station", "", "GenerateAccessCode", "");
+                "SPA2Station", "NoToken", "GenerateAccessCode", "");
 
           string s = "Command performed OK";
           var wrapped = new Wrapper<string>(s);

@@ -14,14 +14,12 @@ using TreasureHuntRestApi.Model;
 
 namespace TreasureHunt
 {
-  public static class Stations
+  public class Stations : ControllerBase
   {
-
-    private static ILogger _logger;
 
 
     [FunctionName("Stations")]
-    public static async Task<IActionResult> Run(
+    public async Task<IActionResult> Run(
         [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req,
         ILogger log)
     {

@@ -2,10 +2,12 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR.Client;
+using Newtonsoft.Json;
 
 namespace GameLib
 {
@@ -41,7 +43,7 @@ namespace GameLib
 
       _connection.On<ClientMessage>("ClientMessage", (cm) =>
       {
-        if(cm.Direction == "SPA2Station" && cm.StationId == _hubDeviceID)
+        if(cm.Direction == "SPA2Station" /* mkmkmk && cm.StationId == _hubDeviceID*/)
         { 
           Debug.WriteLine(cm.Command);
 
@@ -77,20 +79,29 @@ namespace GameLib
           
   }
 
+  [DataContract]
   public class ClientMessage
   {
-    public string Sender;
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    public string Sender { get; set; }
 
-    public string StationId;
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    public string StationId { get; set; }
 
-    public string Direction;
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    public string Direction { get; set; }
     // Token so that the clients know if the message is for them
-    public string AccessToken;
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    public string AccessToken { get; set; }
     // The Command
-    public string Command;
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    public string Command { get; set; }
     // The parameters
-    public string Parameters;
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    public string Parameters { get; set; }
   }
+
+
 
   public class ClientCommandEventArgs : EventArgs
   {

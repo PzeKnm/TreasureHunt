@@ -1,5 +1,6 @@
 import { Component, OnInit, Input, ViewChild, ElementRef, NgZone } from '@angular/core';
-import { VisualisationData } from 'src/app/services/visualisation-data.service';
+import { VisualisationData } from 'src/app/services/signal-r.service';
+
 
 @Component({
   selector: 'app-final-page',

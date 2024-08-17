@@ -3,16 +3,15 @@ import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http
 import { Observable, of, Subject } from 'rxjs';
 import { map, catchError, tap } from 'rxjs/operators';
 import { GameDto, WrapperOfIEnumerableOfGameDto, AccessResultDto, WrapperOfAccessResultDto, UserDto, WrapperOfIEnumerableOfUserDto } from 'src/app/shared/model/game';
-import { stringify } from '@angular/core/src/util';
 import { Router } from '@angular/router';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class GameRestApiService {
 
-  endpoint = 'https://treasurehuntrestapi.azurewebsites.net/api/';
-  ////endpoint = 'http://localhost:7071/api/';
+  private endpoint = '';
 
   httpOptions = {
     headers: new HttpHeaders({
@@ -20,7 +19,9 @@ export class GameRestApiService {
     })
   };
 
-  constructor(private http: HttpClient, private router: Router) { }
+  constructor(private http: HttpClient, private router: Router) {
+    this.endpoint = environment.restApiBaseUrl;
+  }
 
   private extractData(res: Response) {
     let body = res;
@@ -72,9 +73,10 @@ export class GameRestApiService {
   }
 
 
-  checkAccessCode(gameId, inputCode): Observable<AccessResultDto> {
+  checkAccessCode(gameId, clientId, inputCode): Observable<AccessResultDto> {
     // The wrapped data that comes from the web server, including errors and links
-    const wrapped$ = <Observable<WrapperOfAccessResultDto>>this.http.get(this.endpoint + 'CheckAccessCode' + '?GameId=' + gameId + '&InputCode=' + inputCode).pipe(
+    const wrapped$ = <Observable<WrapperOfAccessResultDto>>this.http.get(this.endpoint + 'CheckAccessCode' 
+        + '?GameId=' + gameId + '&ClientId=' + clientId + '&InputCode=' + inputCode).pipe(
       catchError((err: any) => {
         const returnValue = new Observable<WrapperOfAccessResultDto>();
         return returnValue;
@@ -93,9 +95,10 @@ export class GameRestApiService {
     return unwrapped$;
   }
 
-  doCommand(gameId: string, token: string, command: string, parameters: string) {
+  passCommandToStation(gameId: string, clientId: string, clientAuthToken: string, command: string, parameters: string) {
     this.http.get(this.endpoint + 'PassCommandToStation' + '?GameId=' + gameId 
-                                + '&AccessToken=' + token 
+                                + '&ClientId=' + clientId 
+                                + '&ClientAuthToken=' + clientAuthToken 
                                 + '&Command=' + command+ '&Parameters=' + parameters).subscribe(
       data  => {
         console.log(data);

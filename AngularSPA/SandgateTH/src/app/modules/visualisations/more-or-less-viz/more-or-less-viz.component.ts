@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { VisualisationDataService, VisualisationData } from 'src/app/services/visualisation-data.service';
+import { ClientMessage, SignalRService, VisualisationData } from 'src/app/services/signal-r.service';
 import { environment } from 'src/environments/environment';
 
 export enum ActivePage {
@@ -21,18 +21,31 @@ export enum ActivePage {
 })
 export class MoreOrLessVizComponent implements OnInit { 
 
-  isConnected: boolean = false;
+  isConnected: boolean = true;
   vizData: VisualisationData | undefined = undefined;
 
-  constructor(private vizSrv: VisualisationDataService) {
+  constructor(private srvSignalR: SignalRService) {
     console.log('ctor');
    }
  
   ngOnInit() {
 
-    this.vizSrv.isConnected$.subscribe(connected => this.isConnected = connected);
-    this.vizSrv.incomingData$.subscribe(data => this.handleIncomingData(data));
-    this.vizSrv.initialise();
+    // this.vizSrv.isConnected$.subscribe(connected => this.isConnected = connected);
+    // this.vizSrv.incomingData$.subscribe(data => this.handleIncomingData(data));
+    // this.vizSrv.initialise();
+
+    this.srvSignalR.allClientMessages$.subscribe((cm: ClientMessage) => {
+      if(cm.command === 'UpdateViz') {
+
+        const viz: VisualisationData = JSON.parse(cm.parameters);
+
+        this.handleIncomingData(viz);
+      }
+      console.log(cm);
+    });
+
+
+
   }
 
 

@@ -4,6 +4,7 @@ using RaspberryGPIOManager;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 using System.Timers;
 
 namespace MoreOrLess
@@ -11,26 +12,22 @@ namespace MoreOrLess
 
   public class MoreOrLess: Game
   {
-
+    string _cStationId = "Station002";
     string _cVersion = "2.0";
-    string _cBackendUrl = "https://treasurehuntrestapi.azurewebsites.net/api/";
-    /*"http://localhost:7071/api"*/
+    // string _cBackendUrl = "https://treasurehuntrestapi.azurewebsites.net/api/";
+    string _cBackendUrl = "http://127.0.0.1:7071/api/";    
 
     bool _cSim = true;
-
-
-
 
     // Constants
     int _cGameLengthSecs = 60;
     int _cAuthenticationtimeoutSecs = 30;
 
-
     int _cShowAnswerSecs = 5;
     int _cShowAutoAcceptAnswerSecs = 20;
 
     // How often to update viz regardless of detected changes.
-    int _cUpdateVisualisationMSecs = 1000;
+    int _cUpdateVisualisationMSecs = 5000;
 
     public enum InternalState
     {
@@ -56,7 +53,7 @@ namespace MoreOrLess
 
     VisualisationGenerator _visGenerator;
 
-    RaspPi _pi;
+    // RaspPi _pi;
 
     DateTime _lastMotionDetected;
 
@@ -66,11 +63,12 @@ namespace MoreOrLess
     public MoreOrLess(GameManager mgr) : base(mgr)
     {
       Console.WriteLine("Program 'MoreOrLess' begins. Version: " + _cVersion);
-      _visGenerator = new VisualisationGenerator(_cSim);
+      Console.WriteLine("Backend api url: " + _cBackendUrl);
+      Console.WriteLine("Sim Mode: " + _cSim.ToString());
 
       SetRestApiBaseUrl(_cBackendUrl);
 
-      SetHubDeviceDetails("Station002", _cBackendUrl, 
+      SetHubDeviceDetails(_cStationId, _cBackendUrl, 
             "IqdycSgOYldhVxe1uW98avBPhWbh0Z4YV58OC2Fl7Q0=" /*"rgvlStnhl3c7vPMeFI9OEK5TnQGL/0WNPBgZji/Hiro="*/ );
       SetGameLength(_cGameLengthSecs);
       SetAuthenticationTimeoutSec(_cAuthenticationtimeoutSecs);
@@ -159,39 +157,43 @@ namespace MoreOrLess
     {
       if(_questionSource == null)
         _questionSource = new QuestionSource(GetRestApi());
-            
-      _pi = new RaspPi(_cSim);
 
-      List<RaspPin> lstPins = new List<RaspPin>();
-      lstPins.Add(new RaspPin { name = "MotionSensor", pinNumber = GPIOPinDriver.Pin.GPIO22, direction = GPIOPinDriver.GPIODirection.In});
-      lstPins.Add(new RaspPin { name = "LightSensor", pinNumber = GPIOPinDriver.Pin.GPIO10, direction = GPIOPinDriver.GPIODirection.In});
-      lstPins.Add(new RaspPin { name = "CorrectAnswer", pinNumber = GPIOPinDriver.Pin.GPIO17, direction = GPIOPinDriver.GPIODirection.Out});
-      lstPins.Add(new RaspPin { name = "IncorrectAnswer", pinNumber = GPIOPinDriver.Pin.GPIO27, direction = GPIOPinDriver.GPIODirection.Out});
+      RestApi rapi = GetRestApi();
+      _visGenerator = new VisualisationGenerator(_cSim, rapi, _cStationId);
 
-      _pi.InitialiseFromPinArray(lstPins);
+      //mkmkmk _pi = new RaspPi(_cSim);
+      /*
+            List<RaspPin> lstPins = new List<RaspPin>();
+            lstPins.Add(new RaspPin { name = "MotionSensor", pinNumber = GPIOPinDriver.Pin.GPIO22, direction = GPIOPinDriver.GPIODirection.In});
+            lstPins.Add(new RaspPin { name = "LightSensor", pinNumber = GPIOPinDriver.Pin.GPIO10, direction = GPIOPinDriver.GPIODirection.In});
+            lstPins.Add(new RaspPin { name = "CorrectAnswer", pinNumber = GPIOPinDriver.Pin.GPIO17, direction = GPIOPinDriver.GPIODirection.Out});
+            lstPins.Add(new RaspPin { name = "IncorrectAnswer", pinNumber = GPIOPinDriver.Pin.GPIO27, direction = GPIOPinDriver.GPIODirection.Out});
+
+            _pi.InitialiseFromPinArray(lstPins);*/
 
       GetRestApi().ShowPerformance(false);
     }
     
     public override void Deinitialise()
     {
-      _pi.Deinitialise();
+      //mkmkmk   _pi.Deinitialise();
     }
 
     private bool IsMotionDetected()
     {
-      if(_pi.ReadPin("MotionSensor") == 1)
+      //mkmkmk
+  /*    if (_pi.ReadPin("MotionSensor") == 1)
       {
         _lastMotionDetected = DateTime.Now;
         return true;
-      }
+      }*/
       
       return false;
     }
 
     private bool IsLightDetected()
     {
-      return (_pi.ReadPin("LightSensor") == 1);
+      return false; //mkmkmk (_pi.ReadPin("LightSensor") == 1);
     }
 
     public override string GetGameCommands()
@@ -304,7 +306,7 @@ namespace MoreOrLess
       if (DeactivateGame())
       {
         Console.WriteLine("Game Deactivated");
-        _pi.Reboot();
+        //mkmkmk _pi.Reboot();
       }
     }
 
@@ -464,9 +466,12 @@ namespace MoreOrLess
       if(/*_dogAcceptAnswerTimeout != null*/GetInternalState() == InternalState.DisplayQuestion)
         nRemainingQuestionTime = _dogAcceptAnswerTimeout.GetRemainingTimeSec();
 
-      _visGenerator.UpdateVisualisation(GetEnvironmentStatus(), GetGameMangerState(), GetInternalState(), GetAccessCode(),
-        _currentQuestion, _currentAnswer, GetScore(), 
-        _cGameLengthSecs, nRemainingTime, nRemainingQuestionTime);
+      if(_visGenerator != null)
+      {
+        _visGenerator.UpdateVisualisation(GetEnvironmentStatus(), GetGameMangerState(), GetInternalState(), GetAccessCode(),
+          _currentQuestion, _currentAnswer, GetScore(), 
+          _cGameLengthSecs, nRemainingTime, nRemainingQuestionTime);
+      }
 
       NotifyClientTimeRemaining();
       _dogUpdateVisualisation.Reset();
@@ -475,16 +480,41 @@ namespace MoreOrLess
     private void PerformPiAnswer(bool bCorrect)
     {      
       int nPulseMs = 1000 * _cShowAnswerSecs;
-      if(bCorrect)
-        _pi.PulsePin("CorrectAnswer", nPulseMs);
-      else
-        _pi.PulsePin("IncorrectAnswer", nPulseMs);      
+      //mkmkmk
+
+      {
+        List<PinStateDto> lst = new List<PinStateDto>();
+        lst.Add(new PinStateDto{ ControllerId = "PiSim", PinName = "CorrectAnswer", State = bCorrect ? 1: 0});
+        lst.Add(new PinStateDto{ ControllerId = "PiSim", PinName = "IncorrectAnswer", State = bCorrect ? 0 : 1 });
+
+        string jsonString = System.Text.Json.JsonSerializer.Serialize(lst);
+        GetRestApi().UploadPinStates(jsonString);
+      }
+
+      Thread.Sleep(1000);
+
+      {
+        List<PinStateDto> lst = new List<PinStateDto>();
+        lst.Add(new PinStateDto { ControllerId = "PiSim", PinName = "CorrectAnswer",
+          Direction = "DB2DEV", State = 0 });
+        lst.Add(new PinStateDto { ControllerId = "PiSim", PinName = "IncorrectAnswer",
+          Direction = "DB2DEV", State = 0 });
+
+        string jsonString = System.Text.Json.JsonSerializer.Serialize(lst);
+        GetRestApi().UploadPinStates(jsonString);
+      }
+
+      /*
+            if (bCorrect)
+              _pi.PulsePin("CorrectAnswer", nPulseMs);
+            else
+              _pi.PulsePin("IncorrectAnswer", nPulseMs);  */
     }
 
     private byte GetEnvironmentStatus()
     {
-      if(_pi == null)
-        return 0;
+      //mkmkmk  if(_pi == null)
+      return 0;
            
       bool bDay = false; ////  (_pi.ReadPin("LightSensor") == 1);
       bool bMovement = false; ////   = (_pi.ReadPin("MotionSensor") == 1);

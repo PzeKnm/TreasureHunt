@@ -325,6 +325,12 @@ namespace GameLib
     {
       Console.WriteLine("ProcessGameCommand: " + gc.ToString()); 
 
+      if(gc.Command == "Loopback")
+      {
+        _restApi.PublishMessageToClient(gc.Command, gc.Parameters);
+        return;
+      }
+
       if (gc.Command == "GenerateAccessCode")
       {
         if(GetGameManagerState() != GameManagerState.Online_Ready &&

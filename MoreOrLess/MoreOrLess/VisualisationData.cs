@@ -12,54 +12,54 @@ namespace MoreOrLess
   [DataContract]
   public class VisualisationData
   {
-    [DataMember]
-    public byte EnvironmentStatus;
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    public byte EnvironmentStatus { get; set; }
 
-    [DataMember]
-    public string GameState;
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    public string GameState { get; set; }
 
-    [DataMember]
-    public int GameStateInt;
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    public int GameStateInt { get; set; }
 
-    [DataMember]
-    public string InternalState;
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    public string InternalState { get; set; }
 
-    [DataMember]
-    public int InternalStateInt;
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    public int InternalStateInt { get; set; }
 
-    [DataMember]
-    public int AccessCode;
-    
-    [DataMember]
-    public Question currentQuestion;
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    public int AccessCode { get; set; }
 
-    [DataMember]
-    public int currentQuestionMin;
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    public Question currentQuestion { get; set; }
 
-    [DataMember]
-    public int currentQuestionMax;
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    public int currentQuestionMin { get; set; }
 
-    [DataMember]
-    public int currentAnswerLo;
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    public int currentQuestionMax { get; set; }
 
-    [DataMember]
-    public int currentAnswerHi;
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    public int currentAnswerLo { get; set; }
 
-    [DataMember]
-    public int PotentialScore;
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    public int currentAnswerHi { get; set; }
 
-    [DataMember]
-    public int Score;
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    public int PotentialScore { get; set; }
 
-    [DataMember]
-    public int TotalGameSecs;
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    public int Score { get; set; }
+
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    public int TotalGameSecs { get; set; }
 
     // Could be remaining game time, pregame countdown or authentication countdown
-    [DataMember]
-    public int RemainingSecs;
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    public int RemainingSecs { get; set; }
 
-    [DataMember]
-    public int RemainingQuestionSecs;   
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    public int RemainingQuestionSecs { get; set; }
 
 
   }

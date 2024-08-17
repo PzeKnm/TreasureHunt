@@ -6,13 +6,51 @@ import { Observable } from "rxjs";
 //import { SignalRConnectionInfo } from "./signalr-connection-info.model";
 import { map, delay } from "rxjs/operators";
 import { Subject } from "rxjs";
+import { environment } from "src/environments/environment";
 
-
-export class SignalRConnectionInfo {
+/** Internal class */
+class SignalRConnectionInfo {
   url: string;
   accessToken: string;
 }
 
+
+export class Question
+{
+  public questionKey: number;
+  public category: string;
+  public questionText: string;
+  public answer: number;
+  public rangeLo: number;
+  public rangeHi: number;
+}
+
+
+
+export class VisualisationData {
+
+  public environmentStatus: number
+  public gameState: string;
+
+  /**
+   *   Ready = 0,
+      FetchQuestion,
+      DisplayQuestion,
+      DisplayAnswer
+   */
+  public internalState: string; 
+  public accessCode: number;
+  public currentQuestion: Question; 
+  public currentQuestionMin: number;
+  public currentQuestionMax: number;
+  public currentAnswerLo: number;
+  public currentAnswerHi: number;
+  public potentialScore: number;
+  public score: number;
+  public totalGameSecs: number; // not just the game mode, could be auth or postgame too
+  public remainingSecs: number; // not just the game mode, could be auth or postgame too
+  public remainingQuestionSecs: number; // only used in game playing mode 
+}
 
 
 export class ClientMessage {
@@ -29,8 +67,7 @@ export class ClientMessage {
 export class SignalRService {
 
     private readonly _http: HttpClient;
-    // private readonly _baseUrl: string = "http://localhost:7071/api/";
-   private readonly _baseUrl: string = "https://treasurehuntrestapi.azurewebsites.net/api/";
+    private _baseUrl: string = '';
 
     private hubConnection: HubConnection;
 
@@ -38,7 +75,8 @@ export class SignalRService {
     allClientMessages$: Subject<ClientMessage> = new Subject();
 
     constructor(http: HttpClient) {
-        this._http = http;
+      this._http = http;
+      this._baseUrl = environment.restApiBaseUrl;
     }
 
     private getConnectionInfo(): Observable<SignalRConnectionInfo> {

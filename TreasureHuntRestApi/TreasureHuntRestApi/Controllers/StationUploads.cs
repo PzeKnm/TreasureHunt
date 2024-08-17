@@ -17,16 +17,15 @@ using TreasureHuntRestApi;
 namespace TreasureHunt
 {
   // Called to inform the Server of the current state of the game
-  public static class UploadStationStatus
+  public class UploadStationStatus : ControllerBase
   {
-    private static ILogger _logger;
 
     [FunctionName("UploadStationStatus")]
-    public static async Task<IActionResult> Run(
+    public async Task<IActionResult> Run(
         [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req,
-        [SignalR(HubName = "broadcast")]IAsyncCollector<SignalRMessage> signalRMessages, 
         ILogger log)
     {
+      DateTime dteBegin = DateTime.Now;
       _logger = log;
       log.LogInformation("Performing UploadStationStatus.");
       int nSuppressMessage = await Task.Run(() => {return 99;});
@@ -80,6 +79,7 @@ namespace TreasureHunt
         arSuccess.Success = true;
         var wrapped = new Wrapper<UploadStationEventResult>(arSuccess);
         wrapped.StatusCode = 200;
+        wrapped.SetExecutionDurationSince(dteBegin);
         return new OkObjectResult(wrapped);      
       }   
 
@@ -88,61 +88,16 @@ namespace TreasureHunt
   }
 
 
-  /*
-  public static class GetStationStatus
+  public class UploadStationEvent : ControllerBase
   {
-    private static ILogger _logger;
-
-    [FunctionName("GetStationStatus")]
-    public static async Task<IActionResult> Run(
-        [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req,
-        [SignalR(HubName = "broadcast")]IAsyncCollector<SignalRMessage> signalRMessages, 
-        ILogger log)
-    {
-      _logger = log;
-      log.LogInformation("Performing GetStationStatus.");
-      int nSuppressMessage = await Task.Run(() => {return 99;});
-
-      string HubDeviceId = req.Query["HubDeviceId"];
-      string HubDeviceKey = req.Query["HubDeviceKey"];
- 
-      // All threee parms must be present
-      if(HubDeviceId == null || HubDeviceKey == null )
-      {
-        return new BadRequestObjectResult(Wrapper<ApiResult>.GetWrappedError("Invalid parameters", 400)); 
-      }
-
-      // Check DeviceKey
-      DataAccess da = new DataAccess(_logger);
-      string sDeviceKey = da.GetStationHubDeviceKeyFromStationHubId(HubDeviceId); 
-      if(!String.Equals(sDeviceKey, HubDeviceKey, StringComparison.OrdinalIgnoreCase) )
-      {
-        return new BadRequestObjectResult(Wrapper<ApiResult>.GetWrappedError("Invalid key", 400)); 
-      }
-
-      // Check that another station isn't logged on with same ID
-      da.UpdateStationStatusFromLastContactTime();
-      string sStatus = da.GetStationStatus(HubDeviceId);
-
-      var wrappedObject = new Wrapper<string>(sStatus);
-      wrappedObject.StatusCode = 200;
-      return new OkObjectResult(wrappedObject);
-    }
-  }*/
-
-
-
-  public static class UploadStationEvent
-  {
-
-    private static ILogger _logger;
 
     [FunctionName("UploadStationEvent")]
-    public static async Task<IActionResult> Run(
+    public async Task<IActionResult> Run(
         [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req,
         [SignalR(HubName = "broadcast")]IAsyncCollector<SignalRMessage> signalRMessages, 
         ILogger log)
     {
+      DateTime dteBegin = DateTime.Now;
       _logger = log;
       log.LogInformation("Performing UploadStationEvent.");
       int nSuppressMessage = await Task.Run(() => {return 99;});
@@ -169,7 +124,7 @@ namespace TreasureHunt
       {
         if(da.UpdateStationHeartbeat(HubDeviceId))
         {
-          return new OkObjectResult(Wrapper<ApiResult>.GetWrappedSuccess());     
+          return new OkObjectResult(Wrapper<ApiResult>.GetWrappedSuccess(dteBegin));     
         }              
       }            
 
@@ -187,7 +142,7 @@ namespace TreasureHunt
 
         // Get Current AccessToken for Station
         string gameId = da.GetGameIdFromHubDeviceId(HubDeviceId);
-        string sToken = da.GetStationToken(gameId);
+        string sToken = da.GetStationAuthToken(gameId);
 /* 
         ClientMessage cm = new ClientMessage();
         cm.AccessToken = sToken;
@@ -204,7 +159,7 @@ namespace TreasureHunt
         await SignalRClientComms.PublishMessageToSignalRClients(signalRMessages, 
                 gameId, HubDeviceId, "Station2SPA", sToken, Command, Parameters);
 
-        return new OkObjectResult(Wrapper<ApiResult>.GetWrappedSuccess());  
+        return new OkObjectResult(Wrapper<ApiResult>.GetWrappedSuccess(dteBegin));  
       }
 
 
@@ -218,17 +173,15 @@ namespace TreasureHunt
 
   }
 
-  public static class UploadStationAccessCode
+  public class UploadStationAccessCode : ControllerBase
   {
-
-    private static ILogger _logger;
-
     [FunctionName("UploadStationAccessCode")]
-    public static async Task<IActionResult> Run(
+    public async Task<IActionResult> Run(
         [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req,
         [SignalR(HubName = "broadcast")]IAsyncCollector<SignalRMessage> signalRMessages, 
         ILogger log)
     {
+      DateTime dteBegin = DateTime.Now;
       _logger = log;
       log.LogInformation("Performing UploadStationAccessCode.");
       int nSuppressMessage = await Task.Run(() => {return 99;});
@@ -256,13 +209,13 @@ namespace TreasureHunt
       if(da.UpdateStationAccessCode(HubDeviceId, AccessCode))
       {
         string gameId = da.GetGameIdFromHubDeviceId(HubDeviceId);
-        string sToken = da.GetStationToken(gameId);
-      /* todo does this function work???
+        string sToken = da.GetStationAuthToken(gameId);
+      /* todo does this function work???*/
         // Notify SPA of timeout
         await SignalRClientComms.PublishMessageToSignalRClients(signalRMessages, 
                 gameId, HubDeviceId, "Station2SPA", sToken, "AuthenticationTimeout", Timeout);
-                */
-        return new OkObjectResult(Wrapper<ApiResult>.GetWrappedSuccess());       
+                
+        return new OkObjectResult(Wrapper<ApiResult>.GetWrappedSuccess(dteBegin));       
       }   
       else
       {

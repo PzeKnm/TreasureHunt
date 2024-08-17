@@ -37,7 +37,7 @@ namespace PinAdapter
 
       _connection.On<ClientMessage>("ClientMessage", (cm) =>
       {
-        if(cm.Direction == "Db2Dev" && cm.StationId == _hubDeviceID)
+        if(cm.Direction.ToUpper() == "DB2DEV" && cm.StationId == _hubDeviceID)
         { 
           ClientCommandEventArgs args = new ClientCommandEventArgs();
           GameCommand gc = new GameCommand(cm.Command, cm.Parameters);

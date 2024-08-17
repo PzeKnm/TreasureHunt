@@ -22,6 +22,8 @@ namespace PinAdapter
         _conf = new Configuration();
         _conf.Load();
 
+        Console.WriteLine("Controller ID: " + _conf.settings.ControllerId);
+
         _raspi = new RaspPi(_conf.settings.Simulation, _conf.settings.ControllerId);
         _raspi.InitialiseFromPinArray(_conf.settings.pins);
 

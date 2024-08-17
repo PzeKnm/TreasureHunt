@@ -49,15 +49,10 @@ export class GameUIView implements OnInit, OnDestroy {
    
     this.gameState = 'PreGame';
 
-    // subscribe to the results of the find......
-    this.subscriptions.add(
-      this.dataCache.gameRequested$.subscribe(
-        data => {
-          this.game = data;            
-      })
-    );
-    // .. and kick off the find.
-    this.dataCache.getGame(this.gameId);
+    this.dataCache.getGameDetails(this.gameId).then((game: GameDto) => {
+      this.game = game;  
+    });
+
   }
 
   ngOnDestroy(): void {
@@ -126,6 +121,11 @@ export class GameUIView implements OnInit, OnDestroy {
       }
     }
     return 'assets/images/game-logo-banner.svg';
+  }
+
+
+  protected doLoopback(): void {
+    this.dataCache.sendCommandToGame(this.gameId, 'Loopback', Date.now().toString());
   }
 
 

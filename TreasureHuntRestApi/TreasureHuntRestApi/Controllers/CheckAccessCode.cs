@@ -13,12 +13,11 @@ using Microsoft.Azure.WebJobs.Extensions.SignalRService;
 
 namespace TreasureHunt
 {
-  public static class CheckAccessCode
+  public class CheckAccessCode : ControllerBase
   {
-    private static ILogger _logger;
 
     [FunctionName("CheckAccessCode")]
-    public static async Task<IActionResult> Run(
+    public async Task<IActionResult> Run(
         [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req,
         [SignalR(HubName = "BroadcastClientMessage")]IAsyncCollector<SignalRMessage> signalRMessages,
         ILogger log)
@@ -27,23 +26,24 @@ namespace TreasureHunt
       log.LogInformation("Checking access code.");
       int nSuppressMessage = await Task.Run(() => {return 99;});
 
+      string ClientId = req.Query["ClientId"];
       string GameId = req.Query["GameId"];
       string inputCode = req.Query["InputCode"]; 
 
-      if(GameId == null || inputCode == null)
+      if(GameId == null || inputCode == null || ClientId == null )
       {
         AccessResult arError = new AccessResult();
         arError.Success = false;
         var wrappedError = new Wrapper<AccessResult>(arError);
         wrappedError.ErrorMessage = "Invalid parameters";
         wrappedError.StatusCode = 400;
+        _logger.LogWarning("CheckAccessCode - Invalid parameters, GameId == null || inputCode == null || ClientId == null");
         return new BadRequestObjectResult(wrappedError);
       }  
 
       DataAccess da = new DataAccess(_logger);
 
-
-      string currentToken = da.GetStationToken(GameId);
+      string currentToken = da.GetStationAuthToken(GameId);
       if(currentToken != "")
       {
         AccessResult arError = new AccessResult();
@@ -51,6 +51,7 @@ namespace TreasureHunt
         var wrappedError = new Wrapper<AccessResult>(arError);
         wrappedError.ErrorMessage = "Station already in use";
         wrappedError.StatusCode = 200;
+        _logger.LogWarning("CheckAccessCode - Station already in use");
         return new OkObjectResult(wrappedError);              
       }
 
@@ -63,10 +64,11 @@ namespace TreasureHunt
         var wrappedError = new Wrapper<AccessResult>(arError);
         wrappedError.ErrorMessage = "Incorrect input code";
         wrappedError.StatusCode = 200;
+        _logger.LogWarning("CheckAccessCode - Incorrect input code");
         return new OkObjectResult(wrappedError);
       }
 
-      string token = da.GenerateNewStationToken(GameId);  
+      string token = da.GenerateNewStationToken(GameId, ClientId);  
 
       // Attach client to station
       string hubDeviceId = da.GetStationHubDeviceId(GameId); 

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
+using System.Net.Http;
 
 namespace GameLib
 {
@@ -19,6 +20,8 @@ namespace GameLib
 
     private bool _showPerformance;
 
+    private static readonly HttpClient client = new HttpClient();
+
     public RestApi(string sBaseUrl, string hubDeviceId, string hubDeviceKey)
     {
       _sBaseURL = sBaseUrl;
@@ -26,6 +29,26 @@ namespace GameLib
       _sHubDeviceKey = hubDeviceKey;
       _showPerformance = false;
     }
+
+
+    public bool BroadcastMessageToSignalRClients(ClientMessage cm)
+    {
+      string sUrl = _sBaseURL + @"BroadcastMessageToSignalRClients";
+      string body = JsonConvert.SerializeObject(cm, Formatting.Indented);
+      PostRequest(sUrl, body);
+      return true;
+    }
+
+
+    public bool UploadPinStates(string sPinStates)
+    {
+      string sUrl = _sBaseURL + @"PinState?Direction=DB2DEV";
+      PostRequest(sUrl, sPinStates);
+      return true;
+    }
+
+
+
 
     public bool UploadStationStatus(string sStatus)
     {
@@ -94,33 +117,36 @@ namespace GameLib
       {
         DateTime before = DateTime.Now;
         HttpWebRequest request = WebRequest.Create(sReq) as HttpWebRequest;
+        request.Proxy = null;
 
+        string sResponse = "";
         // Get response  
         using (HttpWebResponse response = request.GetResponse() as HttpWebResponse)
         {
-            // Get the response stream  
-            StreamReader reader = new StreamReader(response.GetResponseStream());
+          using (Stream responseStream = response.GetResponseStream())
+          {
+            using (StreamReader sr = new StreamReader(responseStream))
+              sResponse = sr.ReadToEnd();
+          }
 
-            string sResponse = reader.ReadToEnd();
+          if(_showPerformance)
+          {
+            TimeSpan timeSpan = DateTime.Now.Subtract(before);
+            Console.WriteLine("Time taken for req: " + timeSpan.ToString());
+            Console.WriteLine(sReq);    
+          }   
 
-            if(_showPerformance)
-            {
-              TimeSpan timeSpan = DateTime.Now.Subtract(before);
-              Console.WriteLine("Time taken for req: " + timeSpan.ToString());
-              Console.WriteLine(sReq);    
-            }   
-
-            if(response.StatusCode == HttpStatusCode.OK)
-              return sResponse;
-            else
-            {
-              Console.WriteLine("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-              Console.WriteLine("SendHttpRequest failed:");
-              Console.WriteLine("Request: " + sReq);
-              Console.WriteLine("Response: " + sResponse);
-              Console.WriteLine("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-              return "";
-            }
+          if(response.StatusCode == HttpStatusCode.OK)
+            return sResponse;
+          else
+          {
+            Console.WriteLine("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+            Console.WriteLine("SendHttpRequest failed:");
+            Console.WriteLine("Request: " + sReq);
+            Console.WriteLine("Response: " + sResponse);
+            Console.WriteLine("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+            return "";
+          }
 
         }
       }
@@ -132,7 +158,17 @@ namespace GameLib
 
     }
 
+    private async void PostRequest(string sUrl, string body)
+    {
+      var content = new StringContent(body, Encoding.UTF8, "application/json");
 
+      var response = await client.PostAsync(sUrl, content);
+
+      var responseString = await response.Content.ReadAsStringAsync();
+
+      return;
+    }
+    
     
     // Allows calling function like:
     // http://sandgatethapi.azurewebsites.net/api/MoreOrLessGetQuestion?HubDeviceId=Station001&HubDeviceKey=ZjyLmuSHOu5Bv8YoqWy49za92%2bnG0cR/8vO2e/8Q1r8=&ExcludeKeys=2,5
@@ -164,12 +200,7 @@ namespace GameLib
     }
 
 
-    //==================================================================================
 
-
-
-
-    //==================================================================================
 
   }
 }

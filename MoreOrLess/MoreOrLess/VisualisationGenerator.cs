@@ -31,11 +31,14 @@ namespace MoreOrLess
 
     VisualisationTcpServer srvTcp;
 
+    VisualisationRestAPI srvRest;
+    string m_StationId;
+
     bool m_bUseFileSystem = false;
 
     bool m_bSim = false;
 
-    public VisualisationGenerator(bool bSim)
+    public VisualisationGenerator(bool bSim, RestApi rapi, string stationId)
     {
       m_bSim = bSim;
       if(m_bSim)
@@ -43,7 +46,9 @@ namespace MoreOrLess
       else
         _path = @"/ram/tmp/";
 
-      if(m_bUseFileSystem)
+      m_StationId = stationId;
+
+      if (m_bUseFileSystem)
       {
         WriteTestFile();
         _dogPendingUpdate = new Watchdog(100);// 
@@ -62,6 +67,8 @@ namespace MoreOrLess
         srvTcp.SpinUpServer("192.168.42.1", 13000);
       });
       t.Start();
+
+      srvRest = new VisualisationRestAPI(rapi, m_StationId, m_bSim);
     }
 
 
@@ -145,10 +152,13 @@ namespace MoreOrLess
 
     private void WriteToVizServer(VisualisationData vd)
     {
+/*
       srvSignalRViz.PublishVisualisationData(vd);
       srvI2CServer.PublishVisualisationData(vd);
       if(srvTcp != null)
         srvTcp.SetVisualisationData(vd);
+*/
+      srvRest.PublishVisualisationData(vd);
     }
 
 

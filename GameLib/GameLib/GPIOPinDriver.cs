@@ -215,7 +215,7 @@ namespace RaspberryGPIOManager
       if (_simMode)
       {
         // unix paths don't have extensions
-        if (!Directory.Exists(path + ".dat"))
+        if (!File.Exists(path + ".dat"))
         {
             System.IO.Directory.CreateDirectory(path + ".dat");
         }

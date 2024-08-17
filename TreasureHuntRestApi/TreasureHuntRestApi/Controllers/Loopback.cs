@@ -13,14 +13,11 @@ using TreasureHunt.Model;
 
 namespace TreasureHunt
 {
-  public static class Loopback
+  public class Loopback : ControllerBase
   {
 
-    private static ILogger _logger;
-
-
     [FunctionName("Loopback")]
-    public static async Task<IActionResult> Run(
+    public async Task<IActionResult> Run(
         [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req,
         ILogger log)
     {

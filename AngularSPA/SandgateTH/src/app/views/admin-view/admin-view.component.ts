@@ -2,7 +2,8 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { DataCacheService } from 'src/app/services/data-cache.service';
 import { UserDto } from 'src/app/shared/model/game';
 import { Subscription } from 'rxjs';
-import { VisualisationData, Question } from 'src/app/services/visualisation-data.service';
+import { Question, VisualisationData } from 'src/app/services/signal-r.service';
+
 
 @Component({
   selector: 'app-admin-view',

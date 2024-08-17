@@ -13,12 +13,11 @@ using Microsoft.Azure.WebJobs.Extensions.SignalRService;
 
 namespace TreasureHunt
 {
-  public static class Settings
+  public class Settings : ControllerBase
   {
-    private static ILogger _logger;
 
     [FunctionName("Settings")]
-    public static async Task<IActionResult> Run(
+    public async Task<IActionResult> Run(
         [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req,
         [SignalR(HubName = "BroadcastClientMessage")]IAsyncCollector<SignalRMessage> signalRMessages,
         ILogger log)

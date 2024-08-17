@@ -2,10 +2,8 @@ import { Component, OnInit, OnDestroy, Input, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DataCacheService } from 'src/app/services/data-cache.service';
 import { GameDto, AccessResultDto } from 'src/app/shared/model/game';
-import { AlertService } from 'src/app/services/alert.service';
 import { Subscription } from 'rxjs';
 import { WatchDogService } from 'src/app/services/watch-dog.service';
-import { trigger } from '@angular/animations';
 import { ClientMessage } from 'src/app/services/signal-r.service';
 import { NumpadComponent } from 'src/app/components/numpad/numpad.component';
 
@@ -31,16 +29,15 @@ export enum PageState {
 })
 export class AccessCodeLoginView implements OnInit, OnDestroy {
 
+  /** Input variable so that test ui can set the state. mkmkmk change this to a setter */
   @Input() pageState: PageState = PageState.GenerateCode;
   // GameNotOnline, GameBusy, GenerateCode, EnterCode, NoCodeGenerated, CheckingCode, WrongCode, TimedOut
   
   @ViewChild(NumpadComponent) numpad: NumpadComponent;
 
-
-
-
-
   public game: GameDto = undefined;
+
+  // ID of TStation (game ID)
   private gameId: string = undefined;
 
   // How long the page will wait for the user to key in the code. Set by server
@@ -68,28 +65,18 @@ export class AccessCodeLoginView implements OnInit, OnDestroy {
 
   ngOnInit() {
 
-    // subscribe to the results of the call to find the game......
-    this.subscriptions.add(
-      this.dataCache.gameRequested$.subscribe(
-        (data: GameDto) => {
-          // Once the game is found, see if we can ask it for an access code.
-          this.game = data;  
-          this.afterGameFound();
-      })
-    );
-
-    // .. and kick off the find.
-    if (this.gameId !== undefined) {
-      this.dataCache.getGame(this.gameId);
-    }
+    this.dataCache.getGameDetails(this.gameId).then((game: GameDto) => {
+      this.game = game;  
+      this.afterGameFound();
+    });
 
     // Subscribe to the results of trying an access code.
-    this.subscriptions.add(
-      this.dataCache.accessResult$.subscribe(
-        data => {
-          this.onAccessResultArrived(data);
-      })
-    );
+    // this.subscriptions.add(
+    //   this.dataCache.accessResult$.subscribe(
+    //     data => {
+    //       this.onAccessResultArrived(data);
+    //   })
+    // );
 
     // subscribe to any commands coming in from Station
     this.subscriptions.add(
@@ -255,24 +242,37 @@ export class AccessCodeLoginView implements OnInit, OnDestroy {
     if (this.game === undefined) {
       return;
     }
-    this.dataCache.checkAccessCode(this.game.id, code);    
-    this.pageState = PageState.CheckingCode;
+
+    this.dataCache.checkAccessCode(this.game.id, code).then((correctCode: boolean) => {
+      if(correctCode === true) {
+        this.router.navigate(['/GameUI', this.game.id]);
+        console.log('Yay!');
+      } else {
+        this.pageState = PageState.WrongCode;
+        // this.watchDog.restart();
+        this.numpad.reset();
+      }
+    });
+
+
+    // this.dataCache.checkAccessCode(this.game.id, code);    
+    // this.pageState = PageState.CheckingCode;
   }
 
 
-  onAccessResultArrived(dto: AccessResultDto) {
-    if(!dto ) {
-      return;
-    }
-    if(dto.success === true) {
-      this.router.navigate(['/GameUI', this.game.id]);
-      console.log('Yay!');
-    } else {
-      this.pageState = PageState.WrongCode;
-      // this.watchDog.restart();
-      this.numpad.reset();
-    }
-  }
+  // onAccessResultArrived(dto: AccessResultDto) {
+  //   if(!dto ) {
+  //     return;
+  //   }
+  //   if(dto.success === true) {
+  //     this.router.navigate(['/GameUI', this.game.id]);
+  //     console.log('Yay!');
+  //   } else {
+  //     this.pageState = PageState.WrongCode;
+  //     // this.watchDog.restart();
+  //     this.numpad.reset();
+  //   }
+  // }
 
 
   getTimeRemaining(): number {

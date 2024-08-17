@@ -30,6 +30,7 @@ export class Link  {
 export class AccessResultDto {
   success?: boolean | undefined;
   gameId?: string | undefined;
+  // ClientAuthToken, only valid for this DataCacheService.clientId
   token?: string | undefined;
 }
 

@@ -21,14 +21,28 @@
     {
       "type": "chrome",
       "request": "launch",
-      "name": "TestViz Launch Chrome ",
+      "name": "MoL GameUI",
+      "url": "http://localhost:4200/GameUI/141e3cd9-0002-4079-bc1e-5a8aa213098b",
+      "webRoot": "${workspaceFolder}"
+    },    
+    {
+      "type": "chrome",
+      "request": "launch",
+      "name": "admin",
+      "url": "http://localhost:4200/admin",
+      "webRoot": "${workspaceFolder}"
+    },  
+    {
+      "type": "chrome",
+      "request": "launch",
+      "name": "TestViz  ",
       "url": "http://localhost:4200/visualisations/TestViz",
       "webRoot": "${workspaceFolder}"
     },   
     {
       "type": "chrome",
       "request": "launch",
-      "name": "UI Launch Chrome ",
+      "name": "TestUI ",
       "url": "http://localhost:4200/ui",
       "webRoot": "${workspaceFolder}"
     },  

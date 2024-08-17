@@ -19,7 +19,6 @@ import { FormsModule } from '@angular/forms';
 import { NumpadComponent } from './components/numpad/numpad.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { AppHeaderComponent } from './components/app-header/app-header.component';
-import { VisualisationDataService, Question} from './services/visualisation-data.service';
 import { UiViewComponent } from './views/ui-view/ui-view.component';
 import { HomeComponent } from './views/home/home.component';
 import { MoreOrLessComponent } from './games/more-or-less/ui/more-or-less-ui/more-or-less.component';
@@ -64,7 +63,6 @@ import { VisualisationsModule } from './modules/visualisations/visualisations.mo
     { provide: ErrorHandler, useClass: GlobalErrorHandler},
     AlertService,
     SignalRService,
-    VisualisationDataService,
     CookieService,
     GuidService
   ],

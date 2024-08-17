@@ -1,0 +1,49 @@
+{
+  "$schema": "http://json.schemastore.org/proxies",
+  "proxies": {
+    "ApiProxy": {
+      "debug":  false,
+      "matchCondition": {
+        "methods": [ "GET" ],
+        "route": "/apixyz/{*restOfPath}"
+      },
+      "backendUri": "https://treasurehuntrestapi.azurewebsites.net/api/{restOfPath}"
+    },
+    "FrontEndUiViewProxy": {
+      "matchCondition": {
+        "methods": [ "GET" ],
+        "route": "/ui"
+      },
+      "backendUri": "https://sandgatethstorageaccount.z8.web.core.windows.net"
+    },
+    "FrontEndMoreOrLessVizViewProxy": {
+      "matchCondition": {
+        "methods": [ "GET" ],
+        "route": "/MoreOrLessViz"
+      },
+      "backendUri": "https://sandgatethstorageaccount.z8.web.core.windows.net"
+    },
+    "FrontEndAccessCodeViewProxy": {
+      "matchCondition": {
+        "methods": [ "GET" ],
+        "route": "/AccessCode/{*restOfPath}"
+      },
+      "backendUri": "https://sandgatethstorageaccount.z8.web.core.windows.net"
+    },
+    "FrontEndGameUIViewProxy": {
+      "matchCondition": {
+        "methods": [ "GET" ],
+        "route": "/GameUI/{*restOfPath}"
+      },
+      "backendUri": "https://sandgatethstorageaccount.z8.web.core.windows.net"
+    },
+    "FrontEndFilesProxy": {
+      "debug": false,
+      "matchCondition": {
+        "methods": [ "GET" ],
+        "route": "/foobar/{*restOfPath}"
+      },
+      "backendUri": "https://sandgatethstorageaccount.z8.web.core.windows.net/{restOfPath}"
+    }
+  }
+}

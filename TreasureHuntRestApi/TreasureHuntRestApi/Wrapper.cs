@@ -31,12 +31,13 @@ namespace TreasureHunt.Data
       return wrapped;
     }
     
-    static public Wrapper<ApiResult> GetWrappedSuccess()
+    static public Wrapper<ApiResult> GetWrappedSuccess(DateTime dteBegin)
     {
       ApiResult res = new ApiResult();
       res.Success = false;
       var wrapped = new Wrapper<ApiResult>(res);
       wrapped.StatusCode = 200;
+      wrapped.SetExecutionDurationSince(dteBegin);
       return wrapped;
     }
 

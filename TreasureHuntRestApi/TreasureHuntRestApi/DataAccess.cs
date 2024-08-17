@@ -9,11 +9,15 @@ using TreasureHunt.Model;
 
 namespace TreasureHunt.Data
 {
- 
+  /// <summary>
+  /// 
+  /// </summary>
   public class DataAccess
   {
 
-    // private static SqlConnection connection = new SqlConnection();
+    /// <summary>
+    /// 
+    /// </summary>
     private static string sConn = "Server=tcp:firebase-subscriptions.database.windows.net,1433;Initial Catalog=SandgateTH;Persist Security Info=False;User ID=FunctionsUser;Password=AddSubs2DB;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
     private static string sConnLongTimeout = "Server=tcp:firebase-subscriptions.database.windows.net,1433;Initial Catalog=SandgateTH;Persist Security Info=False;User ID=FunctionsUser;Password=AddSubs2DB;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=120;";
 
@@ -22,12 +26,21 @@ namespace TreasureHunt.Data
     private static int cInactivityTimoutMin = 10;
 
     private ILogger _logger;
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="log"></param>
     public DataAccess(ILogger log)
     {
       _logger = log;
     }
 
-    // since the DB is on a sleepable resource, wake it up if need be
+
+    /// <summary>
+    /// since the DB is on a sleepable resource, wake it up if need be
+    /// </summary>
+    /// <returns></returns>
     public bool CheckDBActive()
     {
       try
@@ -41,11 +54,15 @@ namespace TreasureHunt.Data
       }
       catch (SqlException ex)
       {
-        _logger.LogInformation(ex.Message);
+        _logger.LogError(ex.Message);
         throw (ex);
       }
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
     public List<GameStationDto> GetGameStations()
     {
       List<GameStationDto> lst = new List<GameStationDto>();
@@ -79,13 +96,16 @@ namespace TreasureHunt.Data
       }
       catch (SqlException ex)
       {
-        _logger.LogInformation(ex.Message);
+        _logger.LogError(ex.Message);
         throw(ex);
       }
 
       return lst;
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     public void UpdateStationStatusFromLastContactTime()
     {
       List<GameStationDto> lst = GetGameStations();
@@ -105,7 +125,11 @@ namespace TreasureHunt.Data
     }
 
 
-
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="gameId"></param>
+    /// <returns></returns>
     public string GetStationAccessCode(string gameId)
     {
       string code = "";
@@ -118,7 +142,6 @@ namespace TreasureHunt.Data
           using (SqlCommand cmd = new SqlCommand(sQry, conn))
           {
             SqlDataReader reader = cmd.ExecuteReader();
-
             if (reader.HasRows)
             {
               while (reader.Read())
@@ -133,13 +156,17 @@ namespace TreasureHunt.Data
       }
       catch (SqlException ex)
       {
-        _logger.LogInformation(ex.Message);
+        _logger.LogError(ex.Message);
       }
 
       return code;
     }
 
-
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="hubDeviceId"></param>
+    /// <returns></returns>
     public string GetGameIdFromHubDeviceId(string hubDeviceId)
     {
       string code = "";
@@ -167,14 +194,18 @@ namespace TreasureHunt.Data
       }
       catch (SqlException ex)
       {
-        _logger.LogInformation(ex.Message);
+        _logger.LogError(ex.Message);
       }
 
       return code;
     }
 
-
-    public string GetStationToken(string gameId)
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="gameId"></param>
+    /// <returns></returns>
+    public string GetStationAuthToken(string gameId)
     {
       string code = "";
       try
@@ -182,7 +213,7 @@ namespace TreasureHunt.Data
         using (SqlConnection conn = new SqlConnection(sConn))
         {
           conn.Open();
-          string sQry = string.Format("SELECT CurrentToken FROM TStation where id = '{0}' ", gameId);
+          string sQry = string.Format("SELECT CurrentAuthToken FROM TStation where id = '{0}' ", gameId);
           using (SqlCommand cmd = new SqlCommand(sQry, conn))
           {
             SqlDataReader reader = cmd.ExecuteReader();
@@ -191,7 +222,7 @@ namespace TreasureHunt.Data
             {
               while (reader.Read())
               {
-                code = reader["CurrentToken"].ToString();  
+                code = reader["CurrentAuthToken"].ToString();  
               }
             }
             
@@ -201,38 +232,52 @@ namespace TreasureHunt.Data
       }
       catch (SqlException ex)
       {
-        _logger.LogInformation(ex.Message);
+        _logger.LogError(ex.Message);
       }
 
       return code;
     }
 
-
-    public string GenerateNewStationToken(string gameId)
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="gameId"></param>
+    /// <returns></returns>
+    public string GenerateNewStationToken(string gameId, string clientId)
     {
       try
       {
+        ClientAuthToken cat = new ClientAuthToken();
+        string sToken = cat.CreateToken(clientId, gameId, DateTime.Now + TimeSpan.FromMinutes(10.0));
+
+        _logger.LogInformation(sToken);
+
         using (SqlConnection conn = new SqlConnection(sConn))
         {
           conn.Open();
-          using (SqlCommand cmd = new SqlCommand("UPDATE TStation SET CurrentToken = NEWID()  WHERE Id = @Id", conn))
+          using (SqlCommand cmd = new SqlCommand("UPDATE TStation SET CurrentAuthToken = @Token  WHERE Id = @Id", conn))
           {
             cmd.Parameters.AddWithValue("@Id", gameId);
+            cmd.Parameters.AddWithValue("@Token", sToken);
             int rows = cmd.ExecuteNonQuery();
             if(rows == 1)
-              return GetStationToken(gameId);
+              return GetStationAuthToken(gameId);
           }          
         }
       }
       catch (SqlException ex)
       {
-        _logger.LogInformation(ex.Message);
+        _logger.LogError(ex.Message);
       }
 
       return "";
     }
 
-
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="gameId"></param>
+    /// <returns></returns>
     public string ResetStationToken(string gameId)
     {
       try
@@ -240,25 +285,29 @@ namespace TreasureHunt.Data
         using (SqlConnection conn = new SqlConnection(sConn))
         {
           conn.Open();
-          using (SqlCommand cmd = new SqlCommand("UPDATE TStation SET CurrentToken = null  WHERE Id = @Id", conn))
+          using (SqlCommand cmd = new SqlCommand("UPDATE TStation SET CurrentAuthToken = ''  WHERE Id = @Id", conn))
           {
             cmd.Parameters.AddWithValue("@Id", gameId);
             int rows = cmd.ExecuteNonQuery();
             if(rows == 1)
-              return GetStationToken(gameId);
+              return GetStationAuthToken(gameId);
           }          
         }
       }
       catch (SqlException ex)
       {
-        _logger.LogInformation(ex.Message);
+        _logger.LogError(ex.Message);
       }
 
       return "";
     }
 
 
-    // Returns the HubDeviceId for a station
+    /// <summary>
+    /// Returns the HubDeviceId for a station
+    /// </summary>
+    /// <param name="GameId"></param>
+    /// <returns></returns>
     public string GetStationHubDeviceId(string GameId)
     {
       string code = "";
@@ -286,13 +335,17 @@ namespace TreasureHunt.Data
       }
       catch (SqlException ex)
       {
-        _logger.LogInformation(ex.Message);
+        _logger.LogError(ex.Message);
       }
 
       return code;
     }
 
-
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="GameId"></param>
+    /// <returns></returns>
     public string GetStationHubDeviceKey(string GameId)
     {
       string code = "";
@@ -320,13 +373,17 @@ namespace TreasureHunt.Data
       }
       catch (SqlException ex)
       {
-        _logger.LogInformation(ex.Message);
+        _logger.LogError(ex.Message);
       }
 
       return code;
     }
 
-
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="StationHubId"></param>
+    /// <returns></returns>
     public string GetStationHubDeviceKeyFromStationHubId(string StationHubId)
     {
       string code = "";
@@ -354,13 +411,17 @@ namespace TreasureHunt.Data
       }
       catch (SqlException ex)
       {
-        _logger.LogInformation(ex.Message);
+        _logger.LogError(ex.Message);
       }
 
       return code;
     }
     
-    
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="StationHubId"></param>
+    /// <returns></returns>
     public string GetStationStatus(string StationHubId)
     {
       string status = "";
@@ -388,12 +449,18 @@ namespace TreasureHunt.Data
       }
       catch (SqlException ex)
       {
-        _logger.LogInformation(ex.Message);
+        _logger.LogError(ex.Message);
       }
 
       return status;
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="stationId"></param>
+    /// <param name="status"></param>
+    /// <returns></returns>
     public bool UpdateStationStatus(string stationId, string status)
     {
       try
@@ -412,11 +479,17 @@ namespace TreasureHunt.Data
       }
       catch (SqlException ex)
       {
-        _logger.LogInformation(ex.Message);
+        _logger.LogError(ex.Message);
       }
       return false;
     }  
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="stationId"></param>
+    /// <param name="authCode"></param>
+    /// <returns></returns>
     public bool UpdateStationAccessCode(string stationId, string authCode)
     {
       try
@@ -435,12 +508,16 @@ namespace TreasureHunt.Data
       }
       catch (SqlException ex)
       {
-        _logger.LogInformation(ex.Message);
+        _logger.LogError(ex.Message);
       }
       return false;
     }  
 
-
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="stationId"></param>
+    /// <returns></returns>
     public bool UpdateStationHeartbeat(string stationId)
     {
       try
@@ -458,13 +535,17 @@ namespace TreasureHunt.Data
       }
       catch (SqlException ex)
       {
-        _logger.LogInformation(ex.Message);
+        _logger.LogError(ex.Message);
       }
       return false;
     }  
 
 
-
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="lstExclude"></param>
+    /// <returns></returns>
     public MoreOrLessQuestion GetMoreOrLessQuestion(List<int> lstExclude)
     {
       MoreOrLessQuestion q = new MoreOrLessQuestion();
@@ -518,15 +599,18 @@ namespace TreasureHunt.Data
       }
       catch (SqlException ex)
       {
-        _logger.LogInformation(ex.Message);
+        _logger.LogError(ex.Message);
       }
            
       return q; 
     }
-  
-
+ 
     
-    
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="SettingName"></param>
+    /// <returns></returns>
     public string GetSetting(string SettingName)
     {
       string value = "";
@@ -554,12 +638,16 @@ namespace TreasureHunt.Data
       }
       catch (SqlException ex)
       {
-        _logger.LogInformation(ex.Message);
+        _logger.LogError(ex.Message);
       }
 
       return value;
     }
     
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
     public List<UserDto> GetUsers()
     {
       List<UserDto> lst = new List<UserDto>();
@@ -593,13 +681,18 @@ namespace TreasureHunt.Data
       }
       catch (SqlException ex)
       {
-        _logger.LogInformation(ex.Message);
+        _logger.LogError(ex.Message);
       }
 
       return lst;
     }
 
-    
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="UserId"></param>
+    /// <param name="UserAgent"></param>
+    /// <param name="ipaddr"></param>
     public void AddOrUpdateUser(string UserId, string UserAgent, string ipaddr)
     {
       try
@@ -626,11 +719,17 @@ namespace TreasureHunt.Data
       }
       catch (SqlException ex)
       {
-        _logger.LogInformation(ex.Message);
+        _logger.LogError(ex.Message);
       }
       return;
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="ControllerId"></param>
+    /// <param name="pinName"></param>
+    /// <returns></returns>
     public List<PinStateDto> GetPinState(string ControllerId, string pinName = "")
     {
       List<PinStateDto> lst = new List<PinStateDto>();
@@ -665,14 +764,19 @@ namespace TreasureHunt.Data
       }
       catch (SqlException ex)
       {
-        _logger.LogInformation(ex.Message);
+        _logger.LogError(ex.Message);
         throw (ex);
       }
 
       return lst;
     }
 
-    // return true if the state has changed
+
+    /// <summary>
+    /// return true if the state has changed
+    /// </summary>
+    /// <param name="pinState"></param>
+    /// <returns></returns>
     public bool SetPinState(PinStateDto pinState)
     {
       try
@@ -727,7 +831,7 @@ namespace TreasureHunt.Data
       }
       catch (SqlException ex)
       {
-        _logger.LogInformation(ex.Message);
+        _logger.LogError(ex.Message);
       }
       return false;
     }

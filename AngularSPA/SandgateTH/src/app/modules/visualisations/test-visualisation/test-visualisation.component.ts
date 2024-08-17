@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { UserDto } from 'src/app/shared/model/game';
-import { VisualisationData, Question } from 'src/app/services/visualisation-data.service';
 import { DataCacheService } from 'src/app/services/data-cache.service';
+import { Question, VisualisationData } from 'src/app/services/signal-r.service';
 
 
 // http://localhost:4200/visualisations/TestViz
