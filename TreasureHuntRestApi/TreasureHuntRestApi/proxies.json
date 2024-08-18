@@ -5,7 +5,7 @@
       "debug":  false,
       "matchCondition": {
         "methods": [ "GET" ],
-        "route": "/apixyz/{*restOfPath}"
+        "route": "/api/{*restOfPath}"
       },
       "backendUri": "https://treasurehuntrestapi.azurewebsites.net/api/{restOfPath}"
     },
@@ -41,7 +41,7 @@
       "debug": false,
       "matchCondition": {
         "methods": [ "GET" ],
-        "route": "/foobar/{*restOfPath}"
+        "route": "/{*restOfPath}"
       },
       "backendUri": "https://sandgatethstorageaccount.z8.web.core.windows.net/{restOfPath}"
     }

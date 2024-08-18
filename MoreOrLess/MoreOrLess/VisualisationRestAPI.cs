@@ -45,8 +45,8 @@ namespace MoreOrLess
       string vizData = System.Text.Json.JsonSerializer.Serialize(vd, serializeOptions);
 
       ClientMessage cm = new ClientMessage();
-      cm.Sender = "Station";
-      cm.StationId = "StationId";
+      cm.Sender = m_StationId;
+      cm.StationId = m_StationId;
       cm.Direction = "Station2Viz";
       cm.AccessToken = "";
       cm.Command = "UpdateViz";

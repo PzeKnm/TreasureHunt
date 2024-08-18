@@ -12,6 +12,7 @@ namespace PinAdapter
     static SignalRClient _signalClient;
     static RaspPi _raspi;
     static RestApi _restApi;
+    static VisualisationI2CServer _i2CServer;
 
     static void Main(string[] args)
     {
@@ -29,7 +30,9 @@ namespace PinAdapter
 
         _restApi = new RestApi(_conf.settings.RestAPiUrl, "", "");
 
-        _signalClient = new SignalRClient(_conf.settings.ControllerId, _conf.settings.RestAPiUrl);
+        _i2CServer = new VisualisationI2CServer(_conf.settings.Simulation);
+
+        _signalClient = new SignalRClient(_conf.settings.StationId, _conf.settings.RestAPiUrl);
         _signalClient.CommandReceived += _signalClient_CommandReceived; ;
         _signalClient.StartListening();
 
@@ -62,11 +65,27 @@ namespace PinAdapter
 
     static private void _signalClient_CommandReceived(object sender, ClientCommandEventArgs e)
     {
-      Console.WriteLine("External pin change: {0}", e.gameCommand.Parameters);
+      if(e.gameCommand.Command == "PinStateChange")
+      {
+        Console.WriteLine("External pin change: {0}", e.gameCommand.Parameters);
 
-      string sPinStates = _restApi.GetPinStates(_conf.settings.ControllerId);
+        string sPinStates = _restApi.GetPinStates(_conf.settings.ControllerId);
 
-      if (sPinStates != "")
+        if (sPinStates != "")
+        {
+          JsonSerializerOptions options = new JsonSerializerOptions
+          {
+            WriteIndented = true,
+            IgnoreNullValues = true,
+            PropertyNameCaseInsensitive = true
+          };
+          RestWrapper<PinStateDto[]> wrap = System.Text.Json.JsonSerializer.Deserialize<RestWrapper<PinStateDto[]>>(sPinStates, options);
+
+          _raspi.WritePinStates(wrap.Data);
+        }
+      }
+
+      if (e.gameCommand.Command == "UpdateViz")
       {
         JsonSerializerOptions options = new JsonSerializerOptions
         {
@@ -74,10 +93,10 @@ namespace PinAdapter
           IgnoreNullValues = true,
           PropertyNameCaseInsensitive = true
         };
-        RestWrapper<PinStateDto[]> wrap = System.Text.Json.JsonSerializer.Deserialize<RestWrapper<PinStateDto[]>>(sPinStates, options);
-
-        _raspi.WritePinStates(wrap.Data);
-      }      
+        VisualisationData vd = JsonSerializer.Deserialize<VisualisationData>(e.gameCommand.Parameters, options);
+        _i2CServer.PublishVisualisationData(vd);
+      }
+      
     }
 
 

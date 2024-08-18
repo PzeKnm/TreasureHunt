@@ -14,8 +14,8 @@ namespace MoreOrLess
   {
     string _cStationId = "Station002";
     string _cVersion = "2.0";
-    // string _cBackendUrl = "https://treasurehuntrestapi.azurewebsites.net/api/";
-    string _cBackendUrl = "http://127.0.0.1:7071/api/";    
+    string _cBackendUrl = "https://treasurehuntrestapi.azurewebsites.net/api/";
+    // string _cBackendUrl = "http://127.0.0.1:7071/api/";    
 
     bool _cSim = true;
 

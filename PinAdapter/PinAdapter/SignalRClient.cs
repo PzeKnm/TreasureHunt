@@ -9,16 +9,16 @@ namespace PinAdapter
   {
     HubConnection _connection;
 
-    string _hubDeviceID;
+    string _StationID;
 
     string _sUrl;
 
     //public event EventHandler CommandReceived;
     public event EventHandler<ClientCommandEventArgs> CommandReceived;
 
-    public SignalRClient(string sHubDeviceID, string sUrl)
+    public SignalRClient(string sStationID, string sUrl)
     {
-      _hubDeviceID = sHubDeviceID;
+      _StationID = sStationID;
       _sUrl = sUrl;
     }
                               
@@ -37,7 +37,7 @@ namespace PinAdapter
 
       _connection.On<ClientMessage>("ClientMessage", (cm) =>
       {
-        if(cm.Direction.ToUpper() == "DB2DEV" && cm.StationId == _hubDeviceID)
+        if(cm.StationId == _StationID)
         { 
           ClientCommandEventArgs args = new ClientCommandEventArgs();
           GameCommand gc = new GameCommand(cm.Command, cm.Parameters);

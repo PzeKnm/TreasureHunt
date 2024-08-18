@@ -18,6 +18,8 @@ namespace PinAdapter
 
     public string ControllerId { get; set; }
 
+    public string StationId { get; set; }
+
     public string RestAPiUrl { get; set; } = string.Empty;
 
     public List<RaspPin> pins { get; set; }
@@ -60,6 +62,7 @@ namespace PinAdapter
       Settings s = new Settings();
       s.Simulation = true;
       s.ControllerId = "PiSim";
+      s.StationId = "Station002";
       s.RestAPiUrl = "https://treasurehuntrestapi.azurewebsites.net/api/";
 
       s.pins = new List<RaspPin>();
