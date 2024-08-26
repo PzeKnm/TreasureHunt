@@ -7,6 +7,15 @@ using System.Text;
 namespace GameLib
 {
 
+  public class PinStateDto
+  {
+    public string Id { get; set; }
+    public string ControllerId { get; set; }
+    public string PinName { get; set; }
+    public string Direction { get; set; }
+    public int State { get; set; }
+  }
+
 
   /// <summary>
   /// Rather than simple pass back the results of a API call directly in the body of the response, they

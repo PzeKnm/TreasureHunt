@@ -24,6 +24,7 @@ import { CorrieText } from './parts/corrie-text/corrie-text';
 import { DemoPageComponent } from './more-or-less-viz/demo-page/demo-page.component';
 import { DormantPageComponent } from './more-or-less-viz/dormant-page/dormant-page.component';
 import { MovieText } from './parts/movie-text/movie-text';
+import { CountdownClock } from './parts/countdown-clock/countdown-clock.component';
 
 @NgModule({
   declarations: [
@@ -48,6 +49,7 @@ import { MovieText } from './parts/movie-text/movie-text';
     QuestionDisplay,
     AnswerHint,
     CorrieText,
+    CountdownClock
   ],
   imports: [
     CommonModule,

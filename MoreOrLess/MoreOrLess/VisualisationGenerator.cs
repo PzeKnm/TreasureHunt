@@ -24,12 +24,12 @@ namespace MoreOrLess
     Watchdog _dogPendingUpdate;
     VisualisationData _vdPending;
 
-    VisualisationSignalRServer srvSignalRViz;
-    CancellationTokenSource cancelSourceVisualisationSignalRServer;
+    // VisualisationSignalRServer srvSignalRViz;
+    // CancellationTokenSource cancelSourceVisualisationSignalRServer;
 
-    VisualisationI2CServer srvI2CServer;
+    // VisualisationI2CServer srvI2CServer;
 
-    VisualisationTcpServer srvTcp;
+    // VisualisationTcpServer srvTcp;
 
     VisualisationRestAPI srvRest;
     string m_StationId;
@@ -55,26 +55,27 @@ namespace MoreOrLess
         _dogPendingUpdate.WatchdogBites += _dogPendingUpdate_WatchdogBites; 
       }
             
-      srvSignalRViz = new VisualisationSignalRServer();
-      cancelSourceVisualisationSignalRServer = new CancellationTokenSource();
-      srvSignalRViz.RunServer(cancelSourceVisualisationSignalRServer.Token);
+      // srvSignalRViz = new VisualisationSignalRServer();
+      // cancelSourceVisualisationSignalRServer = new CancellationTokenSource();
+      // srvSignalRViz.RunServer(cancelSourceVisualisationSignalRServer.Token);
 
-      srvI2CServer = new VisualisationI2CServer(m_bSim);
+      // srvI2CServer = new VisualisationI2CServer(m_bSim);
 
+/*
       srvTcp = new VisualisationTcpServer();
       Thread t = new Thread(delegate ()
       {
         srvTcp.SpinUpServer("192.168.42.1", 13000);
       });
       t.Start();
-
-      srvRest = new VisualisationRestAPI(rapi, m_StationId, m_bSim);
+*/
+      srvRest = new VisualisationRestAPI(rapi, m_StationId);
     }
 
 
     public void StopVizServer()
     {
-      cancelSourceVisualisationSignalRServer.Cancel();
+      // cancelSourceVisualisationSignalRServer.Cancel();
     }
 
 

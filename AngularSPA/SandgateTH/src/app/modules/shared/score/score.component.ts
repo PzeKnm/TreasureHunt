@@ -2,6 +2,12 @@ import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/cor
 import { trigger, state, style, transition, animate, AnimationEvent } from '@angular/animations';
 import { Subject } from 'rxjs';
 
+
+/** hinge on leave
+ * https://stackblitz.com/edit/angular-animations-lib-demo?file=src%2Fapp%2Fapp.component.html
+ * https://github.com/filipows/angular-animations
+ */
+
 @Component({
   selector: 'app-score',
   templateUrl: './score.component.html',

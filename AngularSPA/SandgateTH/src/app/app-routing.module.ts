@@ -8,10 +8,12 @@ import { HomeComponent } from './views/home/home.component';
 import { AccessCodeLoginView } from './views/access-code-login/access-code-login.component';
 import { GameUIView } from './views/game-ui/game-ui.component';
 import { MoreOrLessVizComponent } from './modules/visualisations/more-or-less-viz/more-or-less-viz.component';
+import { TestVisualisationComponent } from './modules/visualisations/test-visualisation/test-visualisation.component';
 
 const routes: Routes = [ 
  // { path: 'visualisations',     loadChildren: '../app/modules/visualisations/visualisations.module#VisualisationsModule' },  
   { path: 'MoreOrLessViz',        component: MoreOrLessVizComponent }, 
+  { path: 'TestViz',              component: TestVisualisationComponent },  
   { path: 'AccessCode/:GameId',   component: AccessCodeLoginView },
   { path: 'GameUI/:GameId',       component: GameUIView },  
   { path: 'admin',                component: AdminViewComponent },   

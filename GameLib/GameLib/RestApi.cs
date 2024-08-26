@@ -48,6 +48,25 @@ namespace GameLib
     }
 
 
+    public int GetPinState(string sControllerId, string sPinName)
+    {
+      string sUrl = _sBaseURL + @"PinState?controllerId=" + sControllerId + "&pinName=" + sPinName;
+      string sResult = SendHttpRequest(sUrl);
+
+      if (sResult != "")
+      {
+        RestWrapper<PinStateDto[]> wrap = JsonConvert.DeserializeObject<RestWrapper<PinStateDto[]>>(sResult);
+        if(wrap.Data.Length == 1)
+        {
+          PinStateDto pin = wrap.Data[0];
+          return pin.State;
+        }
+      }
+
+      return -1;
+    }
+
+
 
 
     public bool UploadStationStatus(string sStatus)

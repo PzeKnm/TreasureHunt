@@ -21,7 +21,7 @@ export enum ActivePage {
 })
 export class MoreOrLessVizComponent implements OnInit { 
 
-  isConnected: boolean = true;
+  isConnected: boolean = false;
   vizData: VisualisationData | undefined = undefined;
 
   constructor(private srvSignalR: SignalRService) {
@@ -36,7 +36,7 @@ export class MoreOrLessVizComponent implements OnInit {
 
     this.srvSignalR.allClientMessages$.subscribe((cm: ClientMessage) => {
       if(cm.command === 'UpdateViz') {
-
+        this.isConnected = true;
         const viz: VisualisationData = JSON.parse(cm.parameters);
 
         this.handleIncomingData(viz);

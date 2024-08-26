@@ -5,9 +5,19 @@
 
 <div style="display: flex; flex-direction: column;" >
 
-  <!--  <button (click)="incScore()"  >Inc score</button>-->
-  <app-score [score]="vizData.score" style="font-size: 5vw; margin:auto; height: 15vh;" >
-  </app-score>
+  <div style="display: flex; flex-direction: row;">
+
+    <!--  <button (click)="incScore()"  >Inc score</button>-->
+    <app-score [score]="vizData.score" style="font-size: 5vw; margin:auto; height: 15vh;" >
+    </app-score>
+
+    <!-- game countdown -->
+    <app-countdown-clock style="width:50px; height:100px; display: block; position:relative" [totalSecs]="vizData.totalGameSecs" 
+            [remainingSecs]="23" >
+    </app-countdown-clock>
+
+
+  </div>
 
   <!--
   <button (click)="changeQuestion()"  >change Q</button>-->
